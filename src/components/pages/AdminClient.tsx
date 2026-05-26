@@ -65,7 +65,7 @@ interface Product {
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const ADMIN_PASSWORD = 'neev@admin2024';
+const ADMIN_PASSWORD = 'Saurabh@123';
 
 const DEFAULT_CATEGORIES: Category[] = [
   {
