@@ -1,0 +1,9 @@
+# Build artifacts — Vercel rebuilds these
+.next/
+node_modules/
+
+# Dev & editor files
+.DS_Store
+*.log
+.env.local
+.env*.local

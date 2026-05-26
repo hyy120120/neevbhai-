@@ -1,0 +1,104 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   Google Fonts are now loaded via next/font in layout.tsx
+   (zero render-blocking, self-hosted from Vercel CDN, no extra network round-trips)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --primary: #1a6b44;
+  --primary-foreground: #ffffff;
+  --gold: #d4af37;
+  --gold-light: #f0e68c;
+  --background: #fafaf8;
+  --foreground: #1a1a18;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Scroll animation helper */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Cart drawer */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 100;
+  backdrop-filter: blur(2px);
+}
+.cart-drawer {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: min(430px, 100vw);
+  background: white;
+  z-index: 101;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  overflow-y: auto;
+}
+.cart-drawer.open {
+  transform: translateX(0);
+}
+
+/* Product image hover */
+.product-img-wrap {
+  overflow: hidden;
+}
+.product-img-wrap img {
+  transition: transform 0.7s ease;
+}
+.product-img-wrap:hover img {
+  transform: scale(1.08);
+}
+
+/* Mobile menu */
+.mobile-menu {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.mobile-menu.open {
+  max-height: 500px;
+}
+
+/* Gold border decoration */
+.gold-border {
+  border: 1px solid var(--gold);
+}
+
+/* Hero progress bar */
+.hero-progress {
+  animation: progress linear forwards;
+}
+@keyframes progress {
+  from { width: 0%; }
+  to { width: 100%; }
+}
