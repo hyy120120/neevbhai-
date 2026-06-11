@@ -13,7 +13,8 @@ export function generateStaticParams() {
   ];
 }
 
-export default function WeddingCategoryPage({ params }: { params: { slug: string[] } }) {
+export default async function WeddingCategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -27,7 +28,7 @@ export default function WeddingCategoryPage({ params }: { params: { slug: string
       <Header />
       <Cart />
       <main className="flex-grow">
-        <WeddingCategoryClient slug={params.slug} />
+        <WeddingCategoryClient slug={slug} />
       </main>
       <Footer />
     </div>

@@ -16,7 +16,8 @@ export function generateStaticParams() {
   ];
 }
 
-export default function SilverCategoryPage({ params }: { params: { slug: string[] } }) {
+export default async function SilverCategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
+  const { slug } = await params;
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -30,7 +31,7 @@ export default function SilverCategoryPage({ params }: { params: { slug: string[
       <Header />
       <Cart />
       <main className="flex-grow">
-        <SilverCategoryClient slug={params.slug} />
+        <SilverCategoryClient slug={slug} />
       </main>
       <Footer />
     </div>
