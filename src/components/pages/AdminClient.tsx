@@ -24,9 +24,12 @@ import {
   Check,
   LogOut,
   ChevronDown,
+  ChevronUp,
   Package,
   Tag,
   Menu,
+  MoveUp,
+  MoveDown,
 } from 'lucide-react';
 import { DEFAULT_CATEGORIES, Category as CategoryType } from '@/lib/categories';
 
@@ -375,6 +378,52 @@ export default function AdminClient() {
       }
     } catch (e) {
       console.error('Delete subcategory error:', e);
+    }
+  };
+
+  const moveSubcategoryUp = async (catSlug: string, subIndex: number) => {
+    if (subIndex === 0) return;
+    const updated = categories.map((c) => {
+      if (c.slug === catSlug) {
+        const newSubs = [...c.subcategories];
+        [newSubs[subIndex - 1], newSubs[subIndex]] = [newSubs[subIndex], newSubs[subIndex - 1]];
+        return { ...c, subcategories: newSubs };
+      }
+      return c;
+    });
+    setCategories(updated);
+    try {
+      const snap = await getDocs(collection(db, 'categories'));
+      const found = snap.docs.find((d) => d.data().slug === catSlug);
+      if (found) {
+        const cat = updated.find((c) => c.slug === catSlug);
+        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      }
+    } catch (e) {
+      console.error('Move subcategory error:', e);
+    }
+  };
+
+  const moveSubcategoryDown = async (catSlug: string, subIndex: number, totalSubs: number) => {
+    if (subIndex === totalSubs - 1) return;
+    const updated = categories.map((c) => {
+      if (c.slug === catSlug) {
+        const newSubs = [...c.subcategories];
+        [newSubs[subIndex], newSubs[subIndex + 1]] = [newSubs[subIndex + 1], newSubs[subIndex]];
+        return { ...c, subcategories: newSubs };
+      }
+      return c;
+    });
+    setCategories(updated);
+    try {
+      const snap = await getDocs(collection(db, 'categories'));
+      const found = snap.docs.find((d) => d.data().slug === catSlug);
+      if (found) {
+        const cat = updated.find((c) => c.slug === catSlug);
+        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      }
+    } catch (e) {
+      console.error('Move subcategory error:', e);
     }
   };
 
@@ -785,19 +834,39 @@ export default function AdminClient() {
                       {cat.subcategories.length === 0 ? (
                         <p className="text-xs text-muted font-paragraph">No subcategories yet.</p>
                       ) : (
-                        <div className="flex flex-wrap gap-2">
-                          {cat.subcategories.map((sub) => (
+                        <div className="space-y-2">
+                          {cat.subcategories.map((sub, idx) => (
                             <div
                               key={sub.slug}
-                              className="flex items-center gap-2 bg-white border border-[#e5e0d5] px-3 py-1.5 text-sm font-paragraph rounded"
+                              className="flex items-center justify-between gap-2 bg-white border border-[#e5e0d5] px-3 py-2 text-sm font-paragraph rounded"
                             >
-                              <span>{sub.name}</span>
-                              <button
-                                onClick={() => deleteSubcategory(cat.slug, sub.slug)}
-                                className="text-gray-400 hover:text-red-500 transition-colors"
-                              >
-                                <X className="h-3 w-3" />
-                              </button>
+                              <span className="flex-1">{sub.name}</span>
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => moveSubcategoryUp(cat.slug, idx)}
+                                  disabled={idx === 0}
+                                  title="Move up"
+                                  className="p-1 text-gray-400 hover:text-[#1a6b44] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  <MoveUp className="h-3.5 w-3.5" />
+                                </button>
+                                <button
+                                  onClick={() => moveSubcategoryDown(cat.slug, idx, cat.subcategories.length)}
+                                  disabled={idx === cat.subcategories.length - 1}
+                                  title="Move down"
+                                  className="p-1 text-gray-400 hover:text-[#1a6b44] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                                >
+                                  <MoveDown className="h-3.5 w-3.5" />
+                                </button>
+                                <div className="w-px h-4 bg-[#e5e0d5]" />
+                                <button
+                                  onClick={() => deleteSubcategory(cat.slug, sub.slug)}
+                                  className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                                  title="Delete"
+                                >
+                                  <X className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
                             </div>
                           ))}
                         </div>

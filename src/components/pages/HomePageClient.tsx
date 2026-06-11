@@ -22,10 +22,10 @@ const categoryColors = [
 ];
 
 const stats = [
-  { number: '2000+', label: 'Happy Customers' },
-  { number: '5000+', label: 'Gifts Delivered' },
-  { number: '4.9★',  label: 'Avg. Rating' },
-  { number: '100%',  label: 'Pure Silver' },
+  { number: '700+', label: 'bulk order delivered' },
+  { number: '100%', label: 'Payment Secure' },
+  { number: '4.6★',  label: 'Avg. Rating' },
+  { number: 'Worldwide',  label: 'Shipping' },
 ];
 
 export default function HomePageClient() {
@@ -49,14 +49,11 @@ export default function HomePageClient() {
   }, []);
 
   // Format categories for display (show main categories + key subcategories)
-  const displayCategories = categories
-    .filter((cat) => cat.name !== '999 Silver') // Filter out unwanted categories if needed
+  const displayCategories = categories 
     .slice(0, 6)
     .map((cat, idx) => {
       // For categories with subcategories, show first subcat, otherwise show main category
-      const link = cat.subcategories.length > 0 
-        ? `/shop/${cat.slug}/${cat.subcategories[0]?.slug || ''}`
-        : `/shop/${cat.slug}`;
+      const link = `/shop/${cat.slug}`;
       
       return {
         name: cat.name,
@@ -201,7 +198,7 @@ export default function HomePageClient() {
             {[
               {
                 icon: '✦',
-                title: 'Pure Silver Craftsmanship',
+                title: '999/German Silver Craftsmanship',
                 desc: 'Every product is crafted from genuine pure silver, ensuring lasting quality and timeless beauty.',
               },
               {
