@@ -6,10 +6,11 @@ import Image from 'next/image';
 import { ShoppingCart, Menu, X, Search, MessageCircle, ChevronDown, ChevronRight, User } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { cn } from '@/lib/utils';
+import { fetchCategoriesFromFirestore, categoriesToNavigation, DEFAULT_CATEGORIES } from '@/lib/categories';
 
-// ─── NAV DATA ────────────────────────────────────────────────────────────────
+// ─── STATIC NAV ITEMS ────────────────────────────────────────────────────────
 
-const navData = [
+const getStaticNavData = (shopColumns: any[]) => [
   {
     label: 'HOME',
     href: '/',
@@ -18,44 +19,7 @@ const navData = [
     label: 'SHOP',
     href: '/shop',
     mega: true,
-    columns: [
-      {
-        heading: 'GERMAN SILVER',
-        href: '/shop/german-silver',
-        items: [
-          { label: "Urli's", href: '/shop/german-silver/urlis' },
-          { label: "Chowki's", href: '/shop/german-silver/chowkis' },
-          { label: 'Dry Fruit Boxes & Jars', href: '/shop/german-silver/dry-fruit-boxes' },
-          { label: 'Traditional Showpieces', href: '/shop/german-silver/traditional-showpieces' },
-          { label: 'Photoframes & Mirrors', href: '/shop/german-silver/photoframes-mirrors' },
-          { label: 'Pooja Items', href: '/shop/german-silver/pooja-items' },
-          { label: 'Candles & Candle Holders', href: '/shop/german-silver/candles' },
-          { label: 'Gifting', href: '/shop/german-silver/gifting' },
-        ],
-      },
-      {
-        heading: 'FESTIVE GIFTS',
-        href: '/shop/festive',
-        items: [
-          { label: 'Diwali', href: '/shop/festive/diwali' },
-          { label: 'Holi', href: '/shop/festive/holi' },
-          { label: 'Ganesh Chaturthi', href: '/shop/festive/ganesh-chaturthi' },
-          { label: 'Janmashtami', href: '/shop/festive/janmashtami' },
-        ],
-      },
-      {
-        heading: 'MORE',
-        href: '/shop/more',
-        items: [
-          { label: 'Corporate Gifts', href: '/shop/corporate-gifts' },
-          { label: 'Baby Announcement', href: '/shop/baby-announcement' },
-          { label: 'Premium Gifts', href: '/shop/premium' },
-          { label: 'Budget Friendly', href: '/shop/budget' },
-          { label: "Bestseller's", href: '/bestsellers' },
-          { label: 'Pure Brass / Copper Gifts', href: '/shop/brass-copper' },
-        ],
-      },
-    ],
+    columns: shopColumns,
   },
   {
     label: 'SHOP BY PRICE',
@@ -90,11 +54,11 @@ const navData = [
       { label: 'Wedding Gifting', href: '/wedding/gifting' },
       { label: 'Rituals', href: '/wedding/rituals' },
     ],
-  },{
+  },
+  {
     label: 'CONTACT US',
     href: '/contact',
   },
-
 ];
 
 // ─── MOBILE ACCORDION ────────────────────────────────────────────────────────
@@ -174,8 +138,32 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [navData, setNavData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { itemCount, toggleCart } = useCartStore();
+
+  // Fetch categories and build navigation
+  useEffect(() => {
+    const loadNavigation = async () => {
+      try {
+        const categories = await fetchCategoriesFromFirestore();
+        const shopColumns = categoriesToNavigation(categories.length > 0 ? categories : DEFAULT_CATEGORIES);
+        const navItems = getStaticNavData(shopColumns);
+        setNavData(navItems);
+      } catch (error) {
+        console.error('Failed to load navigation:', error);
+        // Fallback to default categories
+        const shopColumns = categoriesToNavigation(DEFAULT_CATEGORIES);
+        const navItems = getStaticNavData(shopColumns);
+        setNavData(navItems);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadNavigation();
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);

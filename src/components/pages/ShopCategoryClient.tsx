@@ -1,155 +1,98 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
 import { MOCK_PRODUCTS, Product } from '@/lib/data';
+import { fetchCategoriesFromFirestore, DEFAULT_CATEGORIES, Category } from '@/lib/categories';
 
-// ─── Category Config ──────────────────────────────────────────────────────────
+// ─── Helper to build config from categories ────────────────────────────────
 
-const categoryConfig: Record<string, {
-  title: string;
-  description: string;
-  filter: (p: Product) => boolean;
-}> = {
-  // German Silver
-  'german-silver': {
-    title: 'German Silver',
-    description: 'Explore our exquisite German Silver collection — handcrafted pieces for every occasion.',
-    filter: (p) => p.category?.toLowerCase().includes('silver') || p.category?.toLowerCase().includes('chowki') || p.category?.toLowerCase().includes('frame') || p.category?.toLowerCase().includes('diya'),
-  },
-  'german-silver/urlis': {
-    title: "Urli's",
-    description: 'Beautiful German Silver Urlis for home decor and gifting.',
-    filter: (p) => p.category?.toLowerCase().includes('urli'),
-  },
-  'german-silver/chowkis': {
-    title: "Chowki's",
-    description: 'Pure German Silver Chowkis with traditional motifs.',
-    filter: (p) => p.category?.toLowerCase().includes('chowki'),
-  },
-  'german-silver/dry-fruit-boxes': {
-    title: 'Dry Fruit Boxes & Jars',
-    description: 'Elegant German Silver dry fruit boxes perfect for gifting.',
-    filter: (p) => p.category?.toLowerCase().includes('dry fruit') || p.category?.toLowerCase().includes('box'),
-  },
-  'german-silver/traditional-showpieces': {
-    title: 'Traditional Showpieces',
-    description: 'Stunning traditional German Silver showpieces for your home.',
-    filter: (p) => p.category?.toLowerCase().includes('showpiece'),
-  },
-  'german-silver/photoframes-mirrors': {
-    title: 'Photoframes & Mirrors',
-    description: 'Elegant German Silver photo frames and mirrors.',
-    filter: (p) => p.category?.toLowerCase().includes('frame'),
-  },
-  'german-silver/pooja-items': {
-    title: 'Pooja Items',
-    description: 'Sacred German Silver pooja items for your home temple.',
-    filter: (p) => p.category?.toLowerCase().includes('pooja') || p.category?.toLowerCase().includes('diya'),
-  },
-  'german-silver/candles': {
-    title: 'Candles & Candle Holders',
-    description: 'Beautiful German Silver candle holders for every occasion.',
-    filter: (p) => p.category?.toLowerCase().includes('candle'),
-  },
-  'german-silver/gifting': {
-    title: 'Gifting',
-    description: 'Perfect German Silver gifts for every celebration.',
-    filter: (p) => p.isBestseller,
-  },
+function buildCategoryConfig(categories: Category[]): Record<string, { title: string; description: string; filter: (p: Product) => boolean }> {
+  const config: Record<string, { title: string; description: string; filter: (p: Product) => boolean }> = {};
 
-  // Festive
-  'festive': {
-    title: 'Festive Gifts',
-    description: 'Celebrate every festival with our premium silver gifting collection.',
-    filter: (p) => p.category?.toLowerCase().includes('diya') || p.isBestseller,
-  },
-  'festive/diwali': {
-    title: 'Diwali',
-    description: 'Light up Diwali with our pure silver diyas and gifting sets.',
-    filter: (p) => p.category?.toLowerCase().includes('diya'),
-  },
-  'festive/holi': {
-    title: 'Holi',
-    description: 'Celebrate Holi with colorful and pure silver gifts.',
-    filter: (p) => p.isBestseller,
-  },
-  'festive/ganesh-chaturthi': {
-    title: 'Ganesh Chaturthi',
-    description: 'Pure silver Ganesh idols and gifting for Ganesh Chaturthi.',
-    filter: (p) => p.category?.toLowerCase().includes('showpiece') || p.itemName?.toLowerCase().includes('ganesh'),
-  },
-  'festive/janmashtami': {
-    title: 'Janmashtami',
-    description: 'Pure silver gifts to celebrate Janmashtami.',
-    filter: (p) => p.isBestseller,
-  },
+  // Dynamic categories
+  categories.forEach((cat) => {
+    config[cat.slug] = {
+      title: cat.name,
+      description: `Explore our ${cat.name} collection.`,
+      filter: (p) => p.category?.toLowerCase() === cat.name.toLowerCase(),
+    };
 
-  // Corporate
-  'corporate-gifts': {
-    title: 'Corporate Gifts',
-    description: 'Premium silver corporate gifting solutions for every occasion.',
-    filter: (p) => p.category?.toLowerCase().includes('corporate'),
-  },
+    // Subcategories
+    cat.subcategories.forEach((sub) => {
+      config[`${cat.slug}/${sub.slug}`] = {
+        title: sub.name,
+        description: `Browse our ${sub.name} collection.`,
+        filter: (p) => p.subcategory?.toLowerCase() === sub.name.toLowerCase(),
+      };
+    });
+  });
 
-  // Baby
-  'baby-announcement': {
-    title: 'Baby Announcement',
-    description: 'Pure silver gifts to celebrate the arrival of your little one.',
-    filter: (p) => p.isBestseller,
-  },
-
-  // More
-  'premium': {
-    title: 'Premium Gifts',
-    description: 'Our most luxurious silver gifts for the most special occasions.',
-    filter: (p) => p.itemPrice >= 5000,
-  },
-  'budget': {
-    title: 'Budget Friendly',
-    description: 'Beautiful silver gifts that are easy on the pocket.',
-    filter: (p) => p.itemPrice <= 2500,
-  },
-  'brass-copper': {
-    title: 'Pure Brass / Copper Gifts',
-    description: 'Traditional brass and copper gifts crafted with care.',
-    filter: (p) => p.isBestseller,
-  },
-
-  // Price
-  'price/150': {
+  // Price ranges (static)
+  config['price/150'] = {
     title: 'Upto ₹150',
     description: 'Affordable silver gifts under ₹150.',
     filter: (p) => p.itemPrice <= 150,
-  },
-  'price/500': {
+  };
+  config['price/500'] = {
     title: 'Upto ₹500',
     description: 'Beautiful silver gifts under ₹500.',
     filter: (p) => p.itemPrice <= 500,
-  },
-  'price/1000': {
+  };
+  config['price/1000'] = {
     title: 'Upto ₹1000',
     description: 'Premium silver gifts under ₹1000.',
     filter: (p) => p.itemPrice <= 1000,
-  },
-  'price/1500': {
+  };
+  config['price/1500'] = {
     title: 'Upto ₹1500',
     description: 'Exquisite silver gifts under ₹1500.',
     filter: (p) => p.itemPrice <= 1500,
-  },
-  'price/above-1500': {
+  };
+  config['price/above-1500'] = {
     title: '₹1500 & Above',
     description: 'Luxury silver gifts for every special occasion.',
     filter: (p) => p.itemPrice >= 1500,
-  },
-};
+  };
+
+  return config;
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export default function ShopCategoryClient({ slug }: { slug: string[] }) {
+export default function ShopCategoryClient({ slug }: { slug?: string[] }) {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const fetchedCategories = await fetchCategoriesFromFirestore();
+        setCategories(fetchedCategories.length > 0 ? fetchedCategories : DEFAULT_CATEGORIES);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        setCategories(DEFAULT_CATEGORIES);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  if (!slug || slug.length === 0) {
+    return (
+      <div className="text-center py-24">
+        <p className="font-heading text-xl text-foreground mb-4">Category not found</p>
+      </div>
+    );
+  }
+
   const key = slug.join('/');
+  const categoryConfig = buildCategoryConfig(categories);
   const config = categoryConfig[key];
 
   const title = config?.title || slug[slug.length - 1]?.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()) || 'Shop';

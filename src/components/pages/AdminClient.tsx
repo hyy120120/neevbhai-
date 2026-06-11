@@ -28,6 +28,7 @@ import {
   Tag,
   Menu,
 } from 'lucide-react';
+import { DEFAULT_CATEGORIES, Category as CategoryType } from '@/lib/categories';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -66,61 +67,6 @@ interface Product {
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const ADMIN_PASSWORD = 'Saurabh@123';
-
-const DEFAULT_CATEGORIES: Category[] = [
-  {
-    name: 'German Silver',
-    slug: 'german-silver',
-    subcategories: [
-      { name: "Urli's", slug: 'urlis' },
-      { name: "Chowki's", slug: 'chowkis' },
-      { name: 'Dry Fruit Boxes & Jars', slug: 'dry-fruit-boxes' },
-      { name: 'Traditional Showpieces', slug: 'traditional-showpieces' },
-      { name: 'Photoframes & Mirrors', slug: 'photoframes-mirrors' },
-      { name: 'Pooja Items', slug: 'pooja-items' },
-      { name: 'Candles & Candle Holders', slug: 'candles' },
-      { name: 'Gifting', slug: 'gifting' },
-    ],
-  },
-  {
-    name: 'Festive Gifts',
-    slug: 'festive',
-    subcategories: [
-      { name: 'Diwali', slug: 'diwali' },
-      { name: 'Holi', slug: 'holi' },
-      { name: 'Ganesh Chaturthi', slug: 'ganesh-chaturthi' },
-      { name: 'Janmashtami', slug: 'janmashtami' },
-    ],
-  },
-  { name: 'Corporate Gifts', slug: 'corporate-gifts', subcategories: [] },
-  { name: 'Baby Announcement', slug: 'baby-announcement', subcategories: [] },
-  {
-    name: '999 Silver',
-    slug: 'silver',
-    subcategories: [
-      { name: 'Chowki', slug: 'chowki' },
-      { name: 'Clock', slug: 'clock' },
-      { name: 'Flower Vase & Candle Stand', slug: 'flower-vase' },
-      { name: 'Frame Idols', slug: 'frame-idols' },
-      { name: 'God Idols', slug: 'god-idols' },
-      { name: 'Photoframe', slug: 'photoframe' },
-      { name: 'Traditional Showpiece', slug: 'traditional-showpiece' },
-      { name: 'Others', slug: 'others' },
-    ],
-  },
-  {
-    name: 'Wedding',
-    slug: 'wedding',
-    subcategories: [
-      { name: 'Wedding Return Favours', slug: 'return-favours' },
-      { name: 'Wedding Gifting', slug: 'gifting' },
-      { name: 'Rituals', slug: 'rituals' },
-    ],
-  },
-  { name: 'Premium Gifts', slug: 'premium', subcategories: [] },
-  { name: 'Budget Friendly', slug: 'budget', subcategories: [] },
-  { name: 'Brass / Copper', slug: 'brass-copper', subcategories: [] },
-];
 
 const DEFAULT_NAV: NavItem[] = [
   { label: 'HOME', href: '/', order: 0, children: [] },

@@ -2,21 +2,23 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import ReviewsCarousel from '@/components/ReviewsCarousel';
 import { Star } from 'lucide-react';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
 import { MOCK_PRODUCTS, MOCK_REVIEWS } from '@/lib/data';
+import { fetchCategoriesFromFirestore, DEFAULT_CATEGORIES, Category } from '@/lib/categories';
 
 const bestsellers = MOCK_PRODUCTS.filter((p) => p.isBestseller).slice(0, 4);
 
-const categories = [
-  { name: 'German Silver',   href: '/shop/german-silver',       accent: '#1a6b44' },
-  { name: 'Festive Gifts',   href: '/shop/festive',             accent: '#8b4513' },
-  { name: 'Corporate Gifts', href: '/shop/corporate-gifts',     accent: '#1a3a6b' },
-  { name: 'Wedding',         href: '/wedding',                  accent: '#6b1a4a' },
-  { name: 'Diyas & Stands',  href: '/shop?category=diyas',      accent: '#6b4a1a' },
-  { name: 'Chowkis',         href: '/shop/german-silver/chowkis', accent: '#1a6b60' },
+const categoryColors = [
+  '#1a6b44', // german silver
+  '#8b4513', // festive
+  '#1a3a6b', // corporate
+  '#6b1a4a', // wedding
+  '#6b4a1a', // price-based
+  '#1a6b60', // subcategories
 ];
 
 const stats = [
@@ -27,6 +29,41 @@ const stats = [
 ];
 
 export default function HomePageClient() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const fetchedCategories = await fetchCategoriesFromFirestore();
+        setCategories(fetchedCategories.length > 0 ? fetchedCategories : DEFAULT_CATEGORIES);
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+        setCategories(DEFAULT_CATEGORIES);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
+
+  // Format categories for display (show main categories + key subcategories)
+  const displayCategories = categories
+    .filter((cat) => cat.name !== '999 Silver') // Filter out unwanted categories if needed
+    .slice(0, 6)
+    .map((cat, idx) => {
+      // For categories with subcategories, show first subcat, otherwise show main category
+      const link = cat.subcategories.length > 0 
+        ? `/shop/${cat.slug}/${cat.subcategories[0]?.slug || ''}`
+        : `/shop/${cat.slug}`;
+      
+      return {
+        name: cat.name,
+        href: link,
+        accent: categoryColors[idx % categoryColors.length],
+      };
+    });
   return (
     <>
       {/* ── Stats Banner ── */}
@@ -57,56 +94,62 @@ export default function HomePageClient() {
             </h2>
           </AnimatedElement>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
-            {categories.map((cat, i) => (
-              <AnimatedElement key={i} delay={i * 70}>
-                <Link href={cat.href} className="group block relative overflow-hidden">
+          {loading ? (
+            <div className="text-center py-12 text-muted font-paragraph">
+              Loading categories...
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+              {displayCategories.map((cat, i) => (
+                <AnimatedElement key={i} delay={i * 70}>
+                  <Link href={cat.href} className="group block relative overflow-hidden">
 
-                  {/* Tall card — barn14 aspect ratio */}
-                  <div className="relative aspect-[3/4] overflow-hidden">
+                    {/* Tall card — barn14 aspect ratio */}
+                    <div className="relative aspect-[3/4] overflow-hidden">
 
-                    {/* Dark background using accent color */}
-                    <div
-                      className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
-                      style={{ backgroundColor: cat.accent }}
-                    />
+                      {/* Dark background using accent color */}
+                      <div
+                        className="absolute inset-0 transition-transform duration-500 group-hover:scale-105"
+                        style={{ backgroundColor: cat.accent }}
+                      />
 
-                    {/* Logo as faded texture in center */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-30 transition-opacity duration-500">
-                      <div className="relative w-3/4 h-3/4">
-                        <Image
-                          src="/logo.jpeg"
-                          alt=""
-                          fill
-                          className="object-contain"
-                        />
+                      {/* Logo as faded texture in center */}
+                      <div className="absolute inset-0 flex items-center justify-center opacity-20 group-hover:opacity-30 transition-opacity duration-500">
+                        <div className="relative w-3/4 h-3/4">
+                          <Image
+                            src="/logo.jpeg"
+                            alt=""
+                            fill
+                            className="object-contain"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Gold shimmer overlay on hover */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute inset-0 bg-[#d4af37]/0 group-hover:bg-[#d4af37]/10 transition-colors duration-500" />
+
+                      {/* Gold top border that slides in */}
+                      <div
+                        className="absolute top-0 left-0 right-0 h-[2px] bg-[#d4af37] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-400"
+                      />
+
+                      {/* Category name — bottom center */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                        <span className="block text-white font-heading font-bold text-sm md:text-base tracking-wide group-hover:text-[#d4af37] transition-colors duration-300">
+                          {cat.name}
+                        </span>
+                        <span className="block mt-1 text-white/60 text-[10px] tracking-[0.2em] uppercase font-paragraph group-hover:text-[#d4af37]/80 transition-colors duration-300">
+                          Shop Now
+                        </span>
                       </div>
                     </div>
 
-                    {/* Gold shimmer overlay on hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute inset-0 bg-[#d4af37]/0 group-hover:bg-[#d4af37]/10 transition-colors duration-500" />
-
-                    {/* Gold top border that slides in */}
-                    <div
-                      className="absolute top-0 left-0 right-0 h-[2px] bg-[#d4af37] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-400"
-                    />
-
-                    {/* Category name — bottom center */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                      <span className="block text-white font-heading font-bold text-sm md:text-base tracking-wide group-hover:text-[#d4af37] transition-colors duration-300">
-                        {cat.name}
-                      </span>
-                      <span className="block mt-1 text-white/60 text-[10px] tracking-[0.2em] uppercase font-paragraph group-hover:text-[#d4af37]/80 transition-colors duration-300">
-                        Shop Now
-                      </span>
-                    </div>
-                  </div>
-
-                </Link>
-              </AnimatedElement>
-            ))}
-          </div>
+                  </Link>
+                </AnimatedElement>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
