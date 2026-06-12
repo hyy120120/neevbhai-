@@ -19,6 +19,10 @@ const nextConfig = {
   // ─── Headers ──────────────────────────────────────────────────────────────
   // Long-lived cache for static assets → cuts repeat-visitor bandwidth.
   async headers() {
+    if (process.env.NODE_ENV === 'development') {
+      return [];
+    }
+
     return [
       {
         source: '/_next/static/(.*)',

@@ -228,20 +228,8 @@ const displayCategories = TOP_CATEGORY_ORDER.map((entry, i) => {
       </section>
 
       {/* Reviews */}
-      <section className="py-16 md:py-24 bg-primary">
-        <div className="container mx-auto px-4 max-w-7xl">
-          <AnimatedElement className="text-center mb-12">
-            <span className="text-xs tracking-[0.25em] uppercase text-[#d4af37] font-paragraph font-semibold">
-              Happy Customers
-            </span>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mt-2">
-              What Our Customers Say
-            </h2>
-          </AnimatedElement>
-
+      <section >
           <ReviewsCarousel />   {/* ← bas yeh ek line */}
-
-        </div>
       </section>
       {/* ── CTA Banner ── */}
       <section className="py-20 bg-[#f5f3ee] border-y border-[#e5e0d5]">
