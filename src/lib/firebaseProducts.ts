@@ -10,7 +10,6 @@ export interface FirebaseProduct {
   category: string;
   subcategory?: string;
   isBestseller: boolean;
-  stock: number;
 }
 
 export async function fetchProductsFromFirestore(): Promise<FirebaseProduct[]> {

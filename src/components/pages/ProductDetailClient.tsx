@@ -29,7 +29,7 @@ export default function ProductDetailClient({ product }: { product: FirebaseProd
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hi! I am interested in ordering "${product.itemName}" (₹${product.itemPrice}). Please share more details. Thank you!`
+    `Hi! I am interested in ordering "${product.itemName}". Please share pricing and availability details. Thank you!`
   );
 
   return (
@@ -89,10 +89,8 @@ export default function ProductDetailClient({ product }: { product: FirebaseProd
 
                 {/* Price */}
                 <div className="flex items-center gap-3">
-                  <span className="text-3xl font-heading font-bold text-primary">
-                    {formatPrice(product.itemPrice)}
-                  </span>
-                  <span className="text-xs text-muted font-paragraph">(Incl. of all taxes)</span>
+                  <span className="text-3xl font-heading font-bold text-primary">As Per MOQ</span>
+<span className="text-xs text-muted font-paragraph">Contact us for pricing based on quantity</span>
                 </div>
 
                 {/* Divider */}
@@ -103,16 +101,7 @@ export default function ProductDetailClient({ product }: { product: FirebaseProd
                   {product.itemDescription}
                 </p>
 
-                {/* Stock */}
-                {product.stock !== undefined && (
-                  <p className="text-xs font-paragraph">
-                    {product.stock > 0 ? (
-                      <span className="text-green-600 font-semibold">✓ In Stock ({product.stock} available)</span>
-                    ) : (
-                      <span className="text-red-500 font-semibold">Out of Stock</span>
-                    )}
-                  </p>
-                )}
+                
 
                 {/* Quantity */}
                 <div className="flex items-center gap-4">

@@ -19,12 +19,12 @@ export default function Cart() {
       if (bulkItems[item.id]) {
         return `• ${item.name} — *Bulk Order* (quantity TBD)`;
       }
-      return `• ${item.name} x${item.quantity} — ${formatPrice(item.price * item.quantity)}`;
+      return `• ${item.name} x${item.quantity}`;
     });
     const message =
       `Hi! I would like to place an order from Neev Gifting:\n\n` +
       lines.join('\n') +
-      `\n\n*Total: ${formatPrice(totalPrice)}*\n\nPlease confirm my order. Thank you!`;
+      `\n\nPlease confirm availability and pricing. Thank you!`;
     return `https://wa.me/919712979856?text=${encodeURIComponent(message)}`;
   };
 
@@ -93,9 +93,7 @@ export default function Cart() {
                     {item.category && (
                       <p className="text-xs text-muted mt-0.5">{item.category}</p>
                     )}
-                    <p className="text-primary font-bold text-sm mt-1">
-                      {formatPrice(item.price)}
-                    </p>
+                    <p className="text-primary font-bold text-sm mt-1">As Per MOQ</p>
 
                     {/* Quantity row */}
                     {!bulkItems[item.id] && (
@@ -165,9 +163,7 @@ export default function Cart() {
             <div className="px-6 py-5 border-t border-gray-100 bg-gray-50/60 sticky bottom-0">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-paragraph text-sm text-muted">Subtotal</span>
-                <span className="font-heading font-bold text-xl text-primary">
-                  {formatPrice(totalPrice)}
-                </span>
+                <span className="font-heading font-bold text-xl text-primary">As Per MOQ</span>
               </div>
               <p className="text-xs text-muted font-paragraph mb-4 text-center">
                 Taxes and shipping calculated at checkout

@@ -64,7 +64,7 @@ interface Product {
   category: string;
   subcategory: string;
   isBestseller: boolean;
-  stock: number;
+  
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ const emptyProduct: Product = {
   category: '',
   subcategory: '',
   isBestseller: false,
-  stock: 0,
+  
 };
 
 type Tab = 'products' | 'categories' | 'navigation';
@@ -258,7 +258,7 @@ export default function AdminClient() {
   };
 
   const handleSaveProduct = async () => {
-    if (!form.itemName || !form.itemPrice) return;
+    if (!form.itemName) return;
     setSaving(true);
     try {
       const imageUrl = await uploadImage();
@@ -669,7 +669,7 @@ export default function AdminClient() {
                   <table className="w-full text-sm font-paragraph">
                     <thead>
                       <tr className="bg-[#f5f3ee] border-b border-[#e5e0d5]">
-                        {['Image', 'Name', 'Category', 'Price', 'Stock', 'Bestseller', 'Actions'].map(
+                        {['Image', 'Name', 'Category', 'Bestseller', 'Actions'].map(
                           (h) => (
                             <th
                               key={h}
@@ -717,8 +717,7 @@ export default function AdminClient() {
                               <p className="text-[10px] text-muted mt-0.5">{product.subcategory}</p>
                             )}
                           </td>
-                          <td className="px-4 py-3 font-bold text-[#1a6b44]">₹{product.itemPrice}</td>
-                          <td className="px-4 py-3 text-muted">{product.stock}</td>
+                          
                           <td className="px-4 py-3">
                             {product.isBestseller ? (
                               <span className="text-xs bg-[#d4af37]/20 text-[#b8960c] px-2 py-1 font-bold rounded">
@@ -1165,35 +1164,14 @@ export default function AdminClient() {
                 />
               </div>
 
-              {/* Price + Stock */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-muted mb-2">
-                    Price (₹) *
-                  </label>
-                  <input
-                    type="number"
-                    value={form.itemPrice || ''}
-                    onChange={(e) => setForm({ ...form, itemPrice: Number(e.target.value) })}
-                    className="w-full border border-[#e5e0d5] px-4 py-2.5 text-sm font-paragraph outline-none focus:border-[#1a6b44] transition-colors"
-                    placeholder="0"
-                    min={0}
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-muted mb-2">
-                    Stock Quantity
-                  </label>
-                  <input
-                    type="number"
-                    value={form.stock || ''}
-                    onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })}
-                    className="w-full border border-[#e5e0d5] px-4 py-2.5 text-sm font-paragraph outline-none focus:border-[#1a6b44] transition-colors"
-                    placeholder="0"
-                    min={0}
-                  />
-                </div>
-              </div>
+              {/* Price — As Per MOQ */}
+<div className="p-4 bg-[#f0fdf4] border border-[#bbf7d0] rounded">
+  <p className="text-xs font-bold uppercase tracking-wider text-[#15803d] mb-1">Pricing</p>
+  <p className="text-base font-heading font-bold text-[#1a6b44]">As Per MOQ</p>
+  <p className="text-xs text-muted font-paragraph mt-1">
+    Price is determined by minimum order quantity. Displayed as "As Per MOQ" across the site.
+  </p>
+</div>
 
               {/* Category + Subcategory */}
               <div className="grid grid-cols-2 gap-4">
@@ -1266,7 +1244,7 @@ export default function AdminClient() {
               </button>
               <button
                 onClick={handleSaveProduct}
-                disabled={saving || uploading || !form.itemName || !form.itemPrice}
+                disabled={saving || uploading || !form.itemName}
                 className="flex-1 py-3 bg-[#1a6b44] text-white text-sm font-paragraph font-bold hover:bg-[#15573a] transition-colors disabled:opacity-50 disabled:cursor-not-allowed rounded"
               >
                 {uploading ? 'Uploading image...' : saving ? 'Saving...' : editProduct ? 'Update Product' : 'Add Product'}
