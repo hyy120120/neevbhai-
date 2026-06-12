@@ -2,15 +2,11 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
 import ReviewsCarousel from '@/components/ReviewsCarousel';
-import { Star } from 'lucide-react';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
-import { MOCK_PRODUCTS, MOCK_REVIEWS } from '@/lib/data';
-import { fetchCategoriesFromFirestore, DEFAULT_CATEGORIES, Category } from '@/lib/categories';
-
-const bestsellers = MOCK_PRODUCTS.filter((p) => p.isBestseller).slice(0, 4);
+import { FirebaseProduct } from '@/lib/firebaseProducts';
+import type { Category } from '@/lib/categories';
 
 const categoryColors = [
   '#1a6b44', // german silver
@@ -21,46 +17,34 @@ const categoryColors = [
   '#1a6b60', // subcategories
 ];
 
+const topCategoryCards = [
+  { name: '999 Silver', href: '/silver', accent: categoryColors[0] },
+  { name: 'German Silver', href: '/shop/german-silver', accent: categoryColors[1] },
+  { name: 'Corporate Gifts', href: '/shop/corporate-gifts', accent: categoryColors[2] },
+  { name: 'Wedding', href: '/wedding', accent: categoryColors[3] },
+  { name: 'Anniversary', href: '/shop', accent: categoryColors[4] },
+  { name: 'Baby Announcement', href: '/shop/baby-announcement', accent: categoryColors[5] },
+];
+
 const stats = [
   { number: '700+', label: 'bulk order delivered' },
   { number: '100%', label: 'Payment Secure' },
-  { number: '4.6★',  label: 'Avg. Rating' },
-  { number: 'Worldwide',  label: 'Shipping' },
+  { number: '4.6★', label: 'Avg. Rating' },
+  { number: 'Worldwide', label: 'Shipping' },
 ];
 
-export default function HomePageClient() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+interface HomePageClientProps {
+  initialCategories: Category[];
+  initialProducts: FirebaseProduct[];
+}
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const fetchedCategories = await fetchCategoriesFromFirestore();
-        setCategories(fetchedCategories.length > 0 ? fetchedCategories : DEFAULT_CATEGORIES);
-      } catch (error) {
-        console.error('Failed to load categories:', error);
-        setCategories(DEFAULT_CATEGORIES);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadCategories();
-  }, []);
-
-  // Format categories for display (show main categories + key subcategories)
-  const displayCategories = categories 
-    .slice(0, 6)
-    .map((cat, idx) => {
-      // For categories with subcategories, show first subcat, otherwise show main category
-      const link = `/shop/${cat.slug}`;
-      
-      return {
-        name: cat.name,
-        href: link,
-        accent: categoryColors[idx % categoryColors.length],
-      };
-    });
+export default function HomePageClient({
+  initialCategories,
+  initialProducts,
+}: HomePageClientProps) {
+  const products = initialProducts;
+  const bestsellers = products.filter((p) => p.isBestseller).slice(0, 4);
+  const displayCategories = topCategoryCards;
   return (
     <>
       {/* ── Stats Banner ── */}
@@ -91,14 +75,9 @@ export default function HomePageClient() {
             </h2>
           </AnimatedElement>
 
-          {loading ? (
-            <div className="text-center py-12 text-muted font-paragraph">
-              Loading categories...
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
               {displayCategories.map((cat, i) => (
-                <AnimatedElement key={i} delay={i * 70}>
+                <AnimatedElement key={cat.href} delay={i * 70}>
                   <Link href={cat.href} className="group block relative overflow-hidden">
 
                     {/* Tall card — barn14 aspect ratio */}
@@ -146,7 +125,6 @@ export default function HomePageClient() {
                 </AnimatedElement>
               ))}
             </div>
-          )}
         </div>
       </section>
 
@@ -164,12 +142,12 @@ export default function HomePageClient() {
           </AnimatedElement>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
-            {bestsellers.map((product, idx) => (
-              <AnimatedElement key={product._id} delay={idx * 100}>
-                <ProductCard product={product} />
-              </AnimatedElement>
-            ))}
-          </div>
+              {bestsellers.map((product, idx) => (
+                <AnimatedElement key={product._id} delay={idx * 100}>
+                  <ProductCard product={product} />
+                </AnimatedElement>
+              ))}
+            </div>
 
           <AnimatedElement className="text-center mt-12" delay={200}>
             <Link
@@ -227,21 +205,21 @@ export default function HomePageClient() {
       </section>
 
       {/* Reviews */}
-<section className="py-16 md:py-24 bg-primary">
-  <div className="container mx-auto px-4 max-w-7xl">
-    <AnimatedElement className="text-center mb-12">
-      <span className="text-xs tracking-[0.25em] uppercase text-[#d4af37] font-paragraph font-semibold">
-        Happy Customers
-      </span>
-      <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mt-2">
-        What Our Customers Say
-      </h2>
-    </AnimatedElement>
+      <section className="py-16 md:py-24 bg-primary">
+        <div className="container mx-auto px-4 max-w-7xl">
+          <AnimatedElement className="text-center mb-12">
+            <span className="text-xs tracking-[0.25em] uppercase text-[#d4af37] font-paragraph font-semibold">
+              Happy Customers
+            </span>
+            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mt-2">
+              What Our Customers Say
+            </h2>
+          </AnimatedElement>
 
-    <ReviewsCarousel />   {/* ← bas yeh ek line */}
+          <ReviewsCarousel />   {/* ← bas yeh ek line */}
 
-  </div>
-</section>
+        </div>
+      </section>
       {/* ── CTA Banner ── */}
       <section className="py-20 bg-[#f5f3ee] border-y border-[#e5e0d5]">
         <div className="container mx-auto px-4 max-w-4xl text-center">

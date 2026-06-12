@@ -1,4 +1,5 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
+import { getCategories, getProducts } from '@/lib/serverData';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import WeddingClient from '@/components/pages/WeddingClient';
@@ -8,7 +9,9 @@ export const metadata = {
   description: 'Elegant silver gifting for weddings — return favours, gifting & rituals.',
 };
 
-export default function WeddingPage() {
+export default async function WeddingPage() {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const weddingCategory = categories.find((c) => c.slug === 'wedding');
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -19,10 +22,10 @@ export default function WeddingPage() {
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <WeddingClient />
+        <WeddingClient initialProducts={products} weddingCategory={weddingCategory} />
       </main>
       <Footer />
     </div>

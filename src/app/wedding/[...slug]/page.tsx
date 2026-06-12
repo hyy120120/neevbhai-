@@ -1,7 +1,8 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import WeddingCategoryClient from '@/components/pages/WeddingCategoryClient';
+import { getProducts } from '@/lib/serverData';
 
 // Pre-render all known wedding category pages at build time → zero serverless
 // function calls for these routes, saving Vercel free-tier function invocations.
@@ -15,6 +16,7 @@ export function generateStaticParams() {
 
 export default async function WeddingCategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;
+  const products = await getProducts();
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -25,10 +27,10 @@ export default async function WeddingCategoryPage({ params }: { params: Promise<
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <WeddingCategoryClient slug={slug} />
+        <WeddingCategoryClient slug={slug} initialProducts={products} />
       </main>
       <Footer />
     </div>

@@ -3,24 +3,27 @@
 import Link from 'next/link';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
-import { MOCK_PRODUCTS } from '@/lib/data';
+import { FirebaseProduct } from '@/lib/firebaseProducts';
+import { Category } from '@/lib/categories';
 
-const silverProducts = MOCK_PRODUCTS.filter((p) =>
-  p.category?.toLowerCase().includes('silver')
-);
+export default function SilverClient({
+  initialProducts,
+  silverCategory,
+}: {
+  initialProducts: FirebaseProduct[];
+  silverCategory?: Category;
+}) {
+  const products = initialProducts;
+  const subcategories =
+    silverCategory?.subcategories.map((sub) => ({
+      name: sub.name,
+      href: `/silver/${sub.slug}`,
+    })) ?? [];
 
-const subcategories = [
-  { name: 'Chowki', href: '/silver/chowki' },
-  { name: 'Clock', href: '/silver/clock' },
-  { name: 'Flower Vase & Candle Stand', href: '/silver/flower-vase' },
-  { name: 'Frame Idols', href: '/silver/frame-idols' },
-  { name: 'God Idols', href: '/silver/god-idols' },
-  { name: 'Photoframe', href: '/silver/photoframe' },
-  { name: 'Traditional Showpiece', href: '/silver/traditional-showpiece' },
-  { name: 'Others', href: '/silver/others' },
-];
+  const silverProducts = products.filter(
+    (p) => p.category?.toLowerCase().includes('silver') || p.category?.toLowerCase().includes('999')
+  );
 
-export default function SilverClient() {
   return (
     <>
       {/* Hero */}

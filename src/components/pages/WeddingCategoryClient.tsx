@@ -4,37 +4,45 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
-import { MOCK_PRODUCTS, Product } from '@/lib/data';
+import { FirebaseProduct } from '@/lib/firebaseProducts';
 
 const categoryConfig: Record<string, {
   title: string;
   description: string;
-  filter: (p: Product) => boolean;
+  filter: (p: FirebaseProduct) => boolean;
 }> = {
   'return-favours': {
     title: 'Wedding Return Favours',
     description: 'Pure silver return favours your guests will cherish forever.',
-    filter: (p) => p.itemPrice <= 3000,
+    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('return')),
   },
   'gifting': {
     title: 'Wedding Gifting',
     description: 'Luxurious silver gifts for the couple, family, and loved ones.',
-    filter: (p) => p.itemPrice >= 2000,
+    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('gifting')),
   },
   'rituals': {
     title: 'Rituals',
     description: 'Pure silver essentials for all your wedding rituals and ceremonies.',
-    filter: (p) => p.category?.toLowerCase().includes('diya') || p.category?.toLowerCase().includes('pooja') || p.category?.toLowerCase().includes('chowki'),
+    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('ritual')),
   },
 };
 
-export default function WeddingCategoryClient({ slug }: { slug: string[] }) {
+export default function WeddingCategoryClient({
+  slug,
+  initialProducts,
+}: {
+  slug: string[];
+  initialProducts: FirebaseProduct[];
+}) {
+  const products = initialProducts;
+
   const key = slug.join('/');
   const config = categoryConfig[key];
 
   const title = config?.title || 'Wedding Collection';
   const description = config?.description || 'Explore our premium wedding silver gifting collection.';
-  const products = config ? MOCK_PRODUCTS.filter(config.filter) : MOCK_PRODUCTS;
+  const filtered = config ? products.filter(config.filter) : products.filter((p) => p.category?.toLowerCase().includes('wedding'));
 
   return (
     <>
@@ -78,7 +86,7 @@ export default function WeddingCategoryClient({ slug }: { slug: string[] }) {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between mb-10">
             <p className="text-sm text-muted font-paragraph">
-              <span className="font-bold text-foreground">{products.length}</span> products found
+              <span className="font-bold text-foreground">{filtered.length}</span> products found
             </p>
             <Link
               href="/wedding"
@@ -89,9 +97,9 @@ export default function WeddingCategoryClient({ slug }: { slug: string[] }) {
             </Link>
           </div>
 
-          {products.length > 0 ? (
+          {filtered.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-12">
-              {products.map((product, idx) => (
+              {filtered.map((product, idx) => (
                 <AnimatedElement key={product._id} delay={idx * 60}>
                   <ProductCard product={product} />
                 </AnimatedElement>

@@ -3,17 +3,8 @@
 import Link from 'next/link';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
-import { MOCK_PRODUCTS } from '@/lib/data';
-
-const weddingProducts = MOCK_PRODUCTS.filter((p) =>
-  p.category?.toLowerCase().includes('wedding')
-);
-
-const subcategories = [
-  { name: 'Wedding Return Favours', href: '/wedding/return-favours' },
-  { name: 'Wedding Gifting', href: '/wedding/gifting' },
-  { name: 'Rituals', href: '/wedding/rituals' },
-];
+import { FirebaseProduct } from '@/lib/firebaseProducts';
+import { Category } from '@/lib/categories';
 
 const features = [
   {
@@ -33,7 +24,24 @@ const features = [
   },
 ];
 
-export default function WeddingClient() {
+export default function WeddingClient({
+  initialProducts,
+  weddingCategory,
+}: {
+  initialProducts: FirebaseProduct[];
+  weddingCategory?: Category;
+}) {
+  const products = initialProducts;
+  const subcategories =
+    weddingCategory?.subcategories.map((sub) => ({
+      name: sub.name,
+      href: `/wedding/${sub.slug}`,
+    })) ?? [];
+
+  const weddingProducts = products.filter((p) =>
+    p.category?.toLowerCase().includes('wedding')
+  );
+
   return (
     <>
       {/* Hero */}

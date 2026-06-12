@@ -1,7 +1,8 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import ShopCategoryClient from '@/components/pages/ShopCategoryClient';
+import { getCategories, getProducts } from '@/lib/serverData';
 
 // All known shop category slugs — pre-rendered at build time.
 export function generateStaticParams() {
@@ -40,6 +41,9 @@ export default async function ShopCategoryPage({ params }: { params: Promise<{ s
   if (!slug || slug.length === 0) {
     return null; // or redirect to /shop
   }
+
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -50,10 +54,10 @@ export default async function ShopCategoryPage({ params }: { params: Promise<{ s
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <ShopCategoryClient slug={slug} />
+        <ShopCategoryClient slug={slug} initialCategories={categories} initialProducts={products} />
       </main>
       <Footer />
     </div>

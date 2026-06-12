@@ -1,10 +1,12 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import HeroSlider from '@/components/HeroSlider';
 import HomePageClient from '@/components/pages/HomePageClient';
+import { getCategories, getProducts } from '@/lib/serverData';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Announcement Bar */}
@@ -20,12 +22,12 @@ export default function HomePage() {
         </a>
       </div>
 
-      <Header />
+      <HeaderWrapper />
       <Cart />
 
       <main className="flex-grow">
         <HeroSlider />
-        <HomePageClient />
+        <HomePageClient initialCategories={categories} initialProducts={products} />
       </main>
 
       <Footer />

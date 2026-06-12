@@ -4,9 +4,7 @@ import Link from 'next/link';
 import { TrendingUp, Star } from 'lucide-react';
 import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
-import { MOCK_PRODUCTS } from '@/lib/data';
-
-const bestsellers = MOCK_PRODUCTS.filter((p) => p.isBestseller);
+import { FirebaseProduct } from '@/lib/firebaseProducts';
 
 const stats = [
   { number: '2000+', label: 'Happy Customers' },
@@ -14,7 +12,9 @@ const stats = [
   { number: '4.9/5', label: 'Average Rating' },
 ];
 
-export default function BestsellersClient() {
+export default function BestsellersClient({ initialProducts }: { initialProducts: FirebaseProduct[] }) {
+  const bestsellers = initialProducts.filter((p) => p.isBestseller);
+
   return (
     <>
       {/* Hero */}

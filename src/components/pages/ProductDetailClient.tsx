@@ -6,10 +6,10 @@ import { useState } from 'react';
 import { ShoppingCart, Star, ArrowLeft, MessageCircle, Shield, Truck, Award } from 'lucide-react';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
-import { Product } from '@/lib/data';
+import { FirebaseProduct } from '@/lib/firebaseProducts';
 import AnimatedElement from '@/components/AnimatedElement';
 
-export default function ProductDetailClient({ product }: { product: Product }) {
+export default function ProductDetailClient({ product }: { product: FirebaseProduct }) {
   const { addItem } = useCartStore();
   const [added, setAdded] = useState(false);
   const [quantity, setQuantity] = useState(1);
@@ -56,7 +56,7 @@ export default function ProductDetailClient({ product }: { product: Product }) {
             <AnimatedElement>
               <div className="relative aspect-square bg-[#f5f3ee] overflow-hidden">
                 <Image
-                  src={product.itemImage}
+                  src={product.itemImage || '/logo.jpeg'}
                   alt={product.itemName}
                   fill
                   className="object-cover"

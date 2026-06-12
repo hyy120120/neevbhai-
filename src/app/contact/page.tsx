@@ -1,4 +1,4 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import ContactClient from '@/components/pages/ContactClient';
@@ -19,7 +19,7 @@ export default function ContactPage() {
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
         <ContactClient />

@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 
-export default function NotFound() {
+export default async function NotFound() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow flex items-center justify-center">
         <div className="text-center px-4 py-20">

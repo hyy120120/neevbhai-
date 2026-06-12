@@ -1,17 +1,30 @@
-import { MOCK_PRODUCTS } from '@/lib/data';
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import ProductDetailClient from '@/components/pages/ProductDetailClient';
 import { notFound } from 'next/navigation';
+import { db } from '@/lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { FirebaseProduct } from '@/lib/firebaseProducts';
 
-export async function generateStaticParams() {
-  return MOCK_PRODUCTS.map((p) => ({ id: p._id }));
+// Dynamic route — product data comes from Firestore at request time.
+export const dynamic = 'force-dynamic';
+
+async function getProduct(id: string): Promise<FirebaseProduct | null> {
+  try {
+    const ref = doc(db, 'products', id);
+    const snap = await getDoc(ref);
+    if (!snap.exists()) return null;
+    return { _id: snap.id, ...snap.data() } as FirebaseProduct;
+  } catch (error) {
+    console.error('Error fetching product:', error);
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p._id === id);
+  const product = await getProduct(id);
   if (!product) return { title: 'Product Not Found' };
   return {
     title: `${product.itemName} — Neev Gifting`,
@@ -21,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p._id === id);
+  const product = await getProduct(id);
   if (!product) notFound();
 
   return (
@@ -34,7 +47,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
         <ProductDetailClient product={product} />

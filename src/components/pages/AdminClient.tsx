@@ -11,7 +11,6 @@ import {
   getDocs,
   orderBy,
   query,
-  setDoc,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Image from 'next/image';
@@ -306,6 +305,19 @@ export default function AdminClient() {
       const snap = await getDocs(collection(db, 'categories'));
       if (!snap.empty) {
         setCategories(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Category)));
+      } else {
+        // Firestore is empty — seed it with the default categories so they
+        // persist and don't disappear after the first custom category is added.
+        const seeded: Category[] = [];
+        for (const cat of DEFAULT_CATEGORIES) {
+          const ref = await addDoc(collection(db, 'categories'), {
+            name: cat.name,
+            slug: cat.slug,
+            subcategories: cat.subcategories,
+          });
+          seeded.push({ ...cat, id: ref.id });
+        }
+        setCategories(seeded);
       }
     } catch (e) {
       console.error('Fetch categories error:', e);
@@ -316,24 +328,27 @@ export default function AdminClient() {
     if (!newCatName.trim()) return;
     const slug = toSlug(newCatName);
     const newCat: Category = { name: newCatName.trim(), slug, subcategories: [] };
-    const updated = [...categories, newCat];
-    setCategories(updated);
     setNewCatName('');
     try {
-      await addDoc(collection(db, 'categories'), newCat);
+      const ref = await addDoc(collection(db, 'categories'), newCat);
+      setCategories((prev) => [...prev, { ...newCat, id: ref.id }]);
     } catch (e) {
       console.error('Add category error:', e);
     }
   };
 
   const deleteCategory = async (slug: string) => {
-    const updated = categories.filter((c) => c.slug !== slug);
-    setCategories(updated);
+    const cat = categories.find((c) => c.slug === slug);
+    setCategories((prev) => prev.filter((c) => c.slug !== slug));
     setDeleteCatConfirm(null);
     try {
-      const snap = await getDocs(collection(db, 'categories'));
-      const found = snap.docs.find((d) => d.data().slug === slug);
-      if (found) await deleteDoc(doc(db, 'categories', found.id));
+      if (cat?.id) {
+        await deleteDoc(doc(db, 'categories', cat.id));
+      } else {
+        const snap = await getDocs(collection(db, 'categories'));
+        const found = snap.docs.find((d) => d.data().slug === slug);
+        if (found) await deleteDoc(doc(db, 'categories', found.id));
+      }
     } catch (e) {
       console.error('Delete category error:', e);
     }
@@ -343,19 +358,19 @@ export default function AdminClient() {
     const name = newSubName[catSlug]?.trim();
     if (!name) return;
     const slug = toSlug(name);
-    const updated = categories.map((c) =>
-      c.slug === catSlug
-        ? { ...c, subcategories: [...c.subcategories, { name, slug }] }
-        : c
+    const cat = categories.find((c) => c.slug === catSlug);
+    const newSubs = [...(cat?.subcategories ?? []), { name, slug }];
+    setCategories((prev) =>
+      prev.map((c) => (c.slug === catSlug ? { ...c, subcategories: newSubs } : c))
     );
-    setCategories(updated);
     setNewSubName((prev) => ({ ...prev, [catSlug]: '' }));
     try {
-      const snap = await getDocs(collection(db, 'categories'));
-      const found = snap.docs.find((d) => d.data().slug === catSlug);
-      if (found) {
-        const cat = updated.find((c) => c.slug === catSlug);
-        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      if (cat?.id) {
+        await updateDoc(doc(db, 'categories', cat.id), { subcategories: newSubs });
+      } else {
+        const snap = await getDocs(collection(db, 'categories'));
+        const found = snap.docs.find((d) => d.data().slug === catSlug);
+        if (found) await updateDoc(doc(db, 'categories', found.id), { subcategories: newSubs });
       }
     } catch (e) {
       console.error('Add subcategory error:', e);
@@ -363,18 +378,18 @@ export default function AdminClient() {
   };
 
   const deleteSubcategory = async (catSlug: string, subSlug: string) => {
-    const updated = categories.map((c) =>
-      c.slug === catSlug
-        ? { ...c, subcategories: c.subcategories.filter((s) => s.slug !== subSlug) }
-        : c
+    const cat = categories.find((c) => c.slug === catSlug);
+    const newSubs = (cat?.subcategories ?? []).filter((s) => s.slug !== subSlug);
+    setCategories((prev) =>
+      prev.map((c) => (c.slug === catSlug ? { ...c, subcategories: newSubs } : c))
     );
-    setCategories(updated);
     try {
-      const snap = await getDocs(collection(db, 'categories'));
-      const found = snap.docs.find((d) => d.data().slug === catSlug);
-      if (found) {
-        const cat = updated.find((c) => c.slug === catSlug);
-        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      if (cat?.id) {
+        await updateDoc(doc(db, 'categories', cat.id), { subcategories: newSubs });
+      } else {
+        const snap = await getDocs(collection(db, 'categories'));
+        const found = snap.docs.find((d) => d.data().slug === catSlug);
+        if (found) await updateDoc(doc(db, 'categories', found.id), { subcategories: newSubs });
       }
     } catch (e) {
       console.error('Delete subcategory error:', e);
@@ -383,21 +398,20 @@ export default function AdminClient() {
 
   const moveSubcategoryUp = async (catSlug: string, subIndex: number) => {
     if (subIndex === 0) return;
-    const updated = categories.map((c) => {
-      if (c.slug === catSlug) {
-        const newSubs = [...c.subcategories];
-        [newSubs[subIndex - 1], newSubs[subIndex]] = [newSubs[subIndex], newSubs[subIndex - 1]];
-        return { ...c, subcategories: newSubs };
-      }
-      return c;
-    });
-    setCategories(updated);
+    const cat = categories.find((c) => c.slug === catSlug);
+    if (!cat) return;
+    const newSubs = [...cat.subcategories];
+    [newSubs[subIndex - 1], newSubs[subIndex]] = [newSubs[subIndex], newSubs[subIndex - 1]];
+    setCategories((prev) =>
+      prev.map((c) => (c.slug === catSlug ? { ...c, subcategories: newSubs } : c))
+    );
     try {
-      const snap = await getDocs(collection(db, 'categories'));
-      const found = snap.docs.find((d) => d.data().slug === catSlug);
-      if (found) {
-        const cat = updated.find((c) => c.slug === catSlug);
-        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      if (cat.id) {
+        await updateDoc(doc(db, 'categories', cat.id), { subcategories: newSubs });
+      } else {
+        const snap = await getDocs(collection(db, 'categories'));
+        const found = snap.docs.find((d) => d.data().slug === catSlug);
+        if (found) await updateDoc(doc(db, 'categories', found.id), { subcategories: newSubs });
       }
     } catch (e) {
       console.error('Move subcategory error:', e);
@@ -406,21 +420,20 @@ export default function AdminClient() {
 
   const moveSubcategoryDown = async (catSlug: string, subIndex: number, totalSubs: number) => {
     if (subIndex === totalSubs - 1) return;
-    const updated = categories.map((c) => {
-      if (c.slug === catSlug) {
-        const newSubs = [...c.subcategories];
-        [newSubs[subIndex], newSubs[subIndex + 1]] = [newSubs[subIndex + 1], newSubs[subIndex]];
-        return { ...c, subcategories: newSubs };
-      }
-      return c;
-    });
-    setCategories(updated);
+    const cat = categories.find((c) => c.slug === catSlug);
+    if (!cat) return;
+    const newSubs = [...cat.subcategories];
+    [newSubs[subIndex], newSubs[subIndex + 1]] = [newSubs[subIndex + 1], newSubs[subIndex]];
+    setCategories((prev) =>
+      prev.map((c) => (c.slug === catSlug ? { ...c, subcategories: newSubs } : c))
+    );
     try {
-      const snap = await getDocs(collection(db, 'categories'));
-      const found = snap.docs.find((d) => d.data().slug === catSlug);
-      if (found) {
-        const cat = updated.find((c) => c.slug === catSlug);
-        await updateDoc(doc(db, 'categories', found.id), { subcategories: cat?.subcategories });
+      if (cat.id) {
+        await updateDoc(doc(db, 'categories', cat.id), { subcategories: newSubs });
+      } else {
+        const snap = await getDocs(collection(db, 'categories'));
+        const found = snap.docs.find((d) => d.data().slug === catSlug);
+        if (found) await updateDoc(doc(db, 'categories', found.id), { subcategories: newSubs });
       }
     } catch (e) {
       console.error('Move subcategory error:', e);

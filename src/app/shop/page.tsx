@@ -1,14 +1,16 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import ShopClient from '@/components/pages/ShopClient';
+import { getProducts } from '@/lib/serverData';
 
 export const metadata = {
   title: 'Shop — Neev Gifting',
   description: 'Explore our collection of premium pure silver gifts.',
 };
 
-export default function ShopPage() {
+export default async function ShopPage() {
+  const products = await getProducts();
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -19,10 +21,10 @@ export default function ShopPage() {
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <ShopClient />
+        <ShopClient initialProducts={products} />
       </main>
       <Footer />
     </div>

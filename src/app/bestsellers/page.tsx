@@ -1,4 +1,5 @@
-import Header from '@/components/Header';
+import HeaderWrapper from '@/components/HeaderWrapper';
+import { getProducts } from '@/lib/serverData';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import BestsellersClient from '@/components/pages/BestsellersClient';
@@ -8,7 +9,8 @@ export const metadata = {
   description: 'Shop our most loved pure silver gifts.',
 };
 
-export default function BestsellersPage() {
+export default async function BestsellersPage() {
+  const products = await getProducts();
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
@@ -19,10 +21,10 @@ export default function BestsellersPage() {
           Click Here
         </a>
       </div>
-      <Header />
+      <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <BestsellersClient />
+        <BestsellersClient initialProducts={products} />
       </main>
       <Footer />
     </div>

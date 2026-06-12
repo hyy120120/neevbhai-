@@ -3,13 +3,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ShoppingCart, Star } from 'lucide-react';
-import { Product } from '@/lib/data';
+import { FirebaseProduct } from '@/lib/firebaseProducts';
 import { useCartStore } from '@/store/cartStore';
 import { formatPrice } from '@/lib/utils';
 import { useState } from 'react';
 
 interface ProductCardProps {
-  product: Product;
+  product: FirebaseProduct;
   showBadge?: boolean;
 }
 
@@ -36,7 +36,7 @@ export default function ProductCard({ product, showBadge = true }: ProductCardPr
       {/* Image */}
       <div className="relative overflow-hidden mb-4 aspect-square bg-gray-50">
         <Image
-          src={product.itemImage}
+          src={product.itemImage || '/logo.jpeg'}
           alt={product.itemName}
           fill
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
