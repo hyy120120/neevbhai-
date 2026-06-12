@@ -69,7 +69,7 @@ export default function HeroSlider() {
   const slide = slides[current];
 
   return (
-    <section className="relative w-full overflow-hidden bg-black" style={{ height: 'min(100vh, 780px)', minHeight: '520px' }}>
+    <section className="relative w-full overflow-hidden bg-black" style={{ height: 'min(100vh, 750px)' }}>
       {/* Background Images — all pre-rendered in DOM; CSS opacity handles transitions */}
       {slides.map((s, i) => (
         <div
@@ -83,7 +83,6 @@ export default function HeroSlider() {
             className="object-cover"
             priority={i === 0}
             sizes="100vw"
-            // unoptimized: Unsplash already resizes via ?w= so skip Vercel quota
             unoptimized
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-black/30" />

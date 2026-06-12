@@ -1,6 +1,19 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
+import { Facebook, Instagram, Mail, Phone, MapPin, MessageCircle } from 'lucide-react';
+
+const SOCIAL_LINKS = [
+  {
+    icon: Facebook,
+    href: 'https://www.facebook.com/share/1CpZLxecTu/',
+    label: 'Facebook',
+  },
+  {
+    icon: Instagram,
+    href: 'https://www.instagram.com/neev_giftingbymonika?igsh=MWN3aGJsY2t6cHg4YQ==',
+    label: 'Instagram',
+  },
+];
 
 export default function Footer() {
   return (
@@ -34,10 +47,13 @@ export default function Footer() {
               Premium personalized gifting solutions for all your special occasions. Quality craftsmanship in pure silver.
             </p>
             <div className="flex space-x-3">
-              {[Facebook, Instagram, Twitter].map((Icon, i) => (
+              {SOCIAL_LINKS.map(({ icon: Icon, href, label }) => (
                 <a
-                  key={i}
-                  href="#"
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
                   className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-[#d4af37] hover:border-[#d4af37] transition-all duration-300"
                 >
                   <Icon className="h-4 w-4" />
@@ -106,7 +122,7 @@ export default function Footer() {
                   className="flex items-start gap-3 text-white/60 hover:text-[#d4af37] transition-colors text-sm font-paragraph group"
                 >
                   <Mail className="h-4 w-4 mt-0.5 flex-shrink-0 group-hover:text-[#d4af37]" />
-                  info@neevgifting.com
+                  neevgiftingstudio@gmail.com
                 </a>
               </li>
               <li>
@@ -119,10 +135,15 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <span className="flex items-start gap-3 text-white/60 text-sm font-paragraph">
-                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                <a
+                  href="https://maps.app.goo.gl/MRe9Z8KSHGAsQA4Y8?g_st=ac"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 text-white/60 hover:text-[#d4af37] transition-colors text-sm font-paragraph group cursor-pointer"
+                >
+                  <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 group-hover:text-[#d4af37]" />
                   India (Ships Worldwide)
-                </span>
+                </a>
               </li>
               <li className="pt-2">
                 <a

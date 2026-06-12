@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ReviewsCarousel from '@/components/ReviewsCarousel';
 import AnimatedElement from '@/components/AnimatedElement';
+import FormattedTitle from '@/components/FormattedTitle';
 import ProductCard from '@/components/ProductCard';
 import { FirebaseProduct } from '@/lib/firebaseProducts';
 import type { Category } from '@/lib/categories';
@@ -135,9 +136,11 @@ const displayCategories = TOP_CATEGORY_ORDER.map((entry, i) => {
 
                       {/* Category name — bottom center */}
                       <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
-                        <span className="block text-white font-heading font-bold text-sm md:text-base tracking-wide group-hover:text-[#d4af37] transition-colors duration-300">
-                          {cat.name}
-                        </span>
+                        <FormattedTitle
+                          as="span"
+                          title={cat.name}
+                          className="block text-white font-heading font-bold text-sm md:text-base tracking-wide group-hover:text-[#d4af37] transition-colors duration-300"
+                        />
                         <span className="block mt-1 text-white/60 text-[10px] tracking-[0.2em] uppercase font-paragraph group-hover:text-[#d4af37]/80 transition-colors duration-300">
                           Shop Now
                         </span>
@@ -218,7 +221,11 @@ const displayCategories = TOP_CATEGORY_ORDER.map((entry, i) => {
                   <div className="w-14 h-14 rounded-full border-2 border-[#d4af37]/40 group-hover:border-[#d4af37] flex items-center justify-center mx-auto mb-5 text-xl text-[#d4af37] transition-all duration-300 group-hover:bg-[#d4af37]/10">
                     {item.icon}
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-foreground mb-3">{item.title}</h3>
+                  <FormattedTitle
+                    as="h3"
+                    title={item.title}
+                    className="font-heading font-bold text-lg text-foreground mb-3"
+                  />
                   <p className="text-sm text-muted font-paragraph leading-relaxed">{item.desc}</p>
                 </div>
               </AnimatedElement>

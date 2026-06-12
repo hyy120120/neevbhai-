@@ -1,7 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Phone, MessageCircle, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Mail, Phone, MessageCircle, MapPin, Send, CheckCircle, ExternalLink } from 'lucide-react';
+
+const MAPS_URL = 'https://maps.app.goo.gl/MRe9Z8KSHGAsQA4Y8?g_st=ac';
 import AnimatedElement from '@/components/AnimatedElement';
 
 const contactCards = [
@@ -266,10 +268,18 @@ export default function ContactClient() {
                     <span className="w-1 h-5 bg-[#d4af37] inline-block" />
                     Our Location
                   </h3>
-                  <div className="flex items-start gap-3 text-sm font-paragraph text-muted mb-4">
+                  <a
+                    href={MAPS_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-3 text-sm font-paragraph text-primary font-semibold mb-4 cursor-pointer underline-offset-4 hover:underline hover:text-[#d4af37] transition-colors group"
+                  >
                     <MapPin className="h-4 w-4 mt-0.5 text-[#d4af37] flex-shrink-0" />
-                    <span>India — Shipping Worldwide</span>
-                  </div>
+                    <span className="flex items-center gap-1.5">
+                      India — Shipping Worldwide
+                      <ExternalLink className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
+                    </span>
+                  </a>
                   <a
                     href="https://wa.me/919712979856?text=I would like to visit your store"
                     target="_blank"
