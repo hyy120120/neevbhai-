@@ -6,44 +6,35 @@ import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
 import { FirebaseProduct } from '@/lib/firebaseProducts';
 
-const categoryConfig: Record<string, {
-  title: string;
-  description: string;
-  filter: (p: FirebaseProduct) => boolean;
-}> = {
-  'return-favours': {
-    title: 'Wedding Return Favours',
-    description: 'Pure silver return favours your guests will cherish forever.',
-    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('return')),
-  },
-  'gifting': {
-    title: 'Wedding Gifting',
-    description: 'Luxurious silver gifts for the couple, family, and loved ones.',
-    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('gifting')),
-  },
-  'rituals': {
-    title: 'Rituals',
-    description: 'Pure silver essentials for all your wedding rituals and ceremonies.',
-    filter: (p) => !!(p.category?.toLowerCase().includes('wedding') && p.subcategory?.toLowerCase().includes('ritual')),
-  },
-};
+import { Category } from '@/lib/categories';
 
 export default function WeddingCategoryClient({
   slug,
   initialProducts,
+  weddingCategory,
 }: {
   slug: string[];
   initialProducts: FirebaseProduct[];
+  weddingCategory?: Category;
 }) {
   const products = initialProducts;
 
   const key = slug.join('/');
-  const config = categoryConfig[key];
+  const sub = weddingCategory?.subcategories.find((s) => s.slug === key);
 
-  const title = config?.title || 'Wedding Collection';
-  const description = config?.description || 'Explore our premium wedding silver gifting collection.';
-  const filtered = config ? products.filter(config.filter) : products.filter((p) => p.category?.toLowerCase().includes('wedding'));
+  const title = sub?.name || 'Wedding Collection';
+  const description = sub
+    ? `Explore our ${sub.name} collection for your special day.`
+    : 'Explore our premium wedding silver gifting collection.';
 
+  // Filter: category contains "wedding" AND subcategory matches the
+  // cloud-defined subcategory name (by slug) — fully data-driven, no
+  // hardcoded local subcategory list.
+  const filtered = products.filter((p) => {
+    const isWedding = !!p.category?.toLowerCase().includes('wedding');
+    if (!sub) return isWedding;
+    return isWedding && p.subcategory?.toLowerCase() === sub.name.toLowerCase();
+  });
   return (
     <>
       {/* Hero */}

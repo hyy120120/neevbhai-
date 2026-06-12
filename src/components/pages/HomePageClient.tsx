@@ -9,22 +9,32 @@ import { FirebaseProduct } from '@/lib/firebaseProducts';
 import type { Category } from '@/lib/categories';
 
 const categoryColors = [
-  '#1a6b44', // german silver
-  '#8b4513', // festive
-  '#1a3a6b', // corporate
-  '#6b1a4a', // wedding
-  '#6b4a1a', // price-based
-  '#1a6b60', // subcategories
+  '#1a6b44',
+  '#8b4513',
+  '#1a3a6b',
+  '#6b1a4a',
+  '#6b4a1a',
+  '#1a6b60',
 ];
 
-const topCategoryCards = [
-  { name: '999 Silver', href: '/silver', accent: categoryColors[0] },
-  { name: 'German Silver', href: '/shop/german-silver', accent: categoryColors[1] },
-  { name: 'Corporate Gifts', href: '/shop/corporate-gifts', accent: categoryColors[2] },
-  { name: 'Wedding', href: '/wedding', accent: categoryColors[3] },
-  { name: 'Anniversary', href: '/shop', accent: categoryColors[4] },
-  { name: 'Baby Announcement', href: '/shop/baby-announcement', accent: categoryColors[5] },
+// Desired display order + special-case routes/names for the homepage
+// "Top Categories" section. The underlying category data (name, existence)
+// still comes from Firestore via `initialCategories` — this just controls
+// ordering and a couple of fixed extras (e.g. "Anniversary" → /shop).
+const TOP_CATEGORY_ORDER: { slug: string; name?: string; href?: string }[] = [
+  { slug: 'silver', name: '999 Silver', href: '/silver' },
+  { slug: 'german-silver' },
+  { slug: 'corporate-gifts' },
+  { slug: 'wedding', href: '/wedding' },
+  { slug: 'anniversary', name: 'Anniversary', href: '/shop' },
+  { slug: 'baby-announcement' },
 ];
+
+function categoryHref(slug: string) {
+  if (slug === 'silver') return '/silver';
+  if (slug === 'wedding') return '/wedding';
+  return `/shop/${slug}`;
+}
 
 const stats = [
   { number: '700+', label: 'bulk order delivered' },
@@ -44,7 +54,20 @@ export default function HomePageClient({
 }: HomePageClientProps) {
   const products = initialProducts;
   const bestsellers = products.filter((p) => p.isBestseller).slice(0, 4);
-  const displayCategories = topCategoryCards;
+const displayCategories = TOP_CATEGORY_ORDER.map((entry, i) => {
+    const cat = initialCategories.find((c) => c.slug === entry.slug);
+    return {
+      name: entry.name ?? cat?.name ?? entry.slug,
+      href: entry.href ?? categoryHref(entry.slug),
+      accent: categoryColors[i % categoryColors.length],
+    };
+  }).filter((card, i) => {
+    // Keep "Anniversary" (no matching category) always; otherwise only show
+    // if the category actually exists in Firestore.
+    const entry = TOP_CATEGORY_ORDER[i];
+    if (entry.slug === 'anniversary') return true;
+    return initialCategories.some((c) => c.slug === entry.slug);
+  });
   return (
     <>
       {/* ── Stats Banner ── */}

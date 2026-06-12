@@ -6,38 +6,35 @@ import AnimatedElement from '@/components/AnimatedElement';
 import ProductCard from '@/components/ProductCard';
 import { FirebaseProduct } from '@/lib/firebaseProducts';
 
-const categoryConfig: Record<string, { title: string; description: string; filterKey: string }> = {
-  'chowki': { title: '999 Silver Chowki', description: 'Pure 999 silver chowkis with traditional motifs for worship and gifting.', filterKey: 'chowki' },
-  'clock': { title: '999 Silver Clocks', description: 'Elegant pure silver wall and table clocks — a timeless statement piece.', filterKey: 'clock' },
-  'flower-vase': { title: 'Flower Vase & Candle Stand', description: 'Pure silver flower vases and candle stands for elegant home decor.', filterKey: 'flower-vase' },
-  'frame-idols': { title: 'Frame Idols', description: 'Pure 999 silver frame idols for your home temple and gifting.', filterKey: 'frame-idols' },
-  'god-idols': { title: 'God Idols', description: 'Sacred pure 999 silver god idols crafted with devotion and precision.', filterKey: 'god-idols' },
-  'photoframe': { title: 'Photoframes', description: 'Pure silver photo frames — preserve your precious memories in silver.', filterKey: 'photoframe' },
-  'traditional-showpiece': { title: 'Traditional Showpieces', description: 'Handcrafted traditional 999 silver showpieces for home and gifting.', filterKey: 'traditional-showpiece' },
-  'others': { title: 'Others', description: 'More pure 999 silver products for every occasion.', filterKey: 'others' },
-};
+import { Category } from '@/lib/categories';
 
 export default function SilverCategoryClient({
   slug,
   initialProducts,
+  silverCategory,
 }: {
   slug: string[];
   initialProducts: FirebaseProduct[];
+  silverCategory?: Category;
 }) {
   const products = initialProducts;
 
   const key = slug.join('/');
-  const config = categoryConfig[key];
-  const title = config?.title || '999 Silver Collection';
-  const description = config?.description || 'Explore our pure 999 silver collection.';
+  const sub = silverCategory?.subcategories.find((s) => s.slug === key);
 
-  // Filter: category === "999 Silver" AND subcategory matches slug
+  const title = sub?.name || '999 Silver Collection';
+  const description = sub
+    ? `Explore our ${sub.name} collection, crafted from pure 999 silver.`
+    : 'Explore our pure 999 silver collection.';
+
+  // Filter: category contains "silver"/"999" AND subcategory matches the
+  // cloud-defined subcategory name (by slug) — fully data-driven, no
+  // hardcoded local subcategory list.
   const filtered = products.filter((p) => {
     const cat = p.category?.toLowerCase() || '';
-    const sub = p.subcategory?.toLowerCase() || '';
-    if (!config) return cat.includes('silver');
-    // Match by subcategory slug or subcategory name containing the key
-    return (cat.includes('silver') || cat.includes('999')) && (sub.includes(config.filterKey) || sub.replace(/\s+/g, '-').includes(config.filterKey));
+    const isSilver = cat.includes('silver') || cat.includes('999');
+    if (!sub) return isSilver;
+    return isSilver && p.subcategory?.toLowerCase() === sub.name.toLowerCase();
   });
 
   return (

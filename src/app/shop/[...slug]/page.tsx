@@ -4,34 +4,28 @@ import Cart from '@/components/Cart';
 import ShopCategoryClient from '@/components/pages/ShopCategoryClient';
 import { getCategories, getProducts } from '@/lib/serverData';
 
-// All known shop category slugs — pre-rendered at build time.
-export function generateStaticParams() {
-  const slugs = [
-    ['german-silver'],
-    ['german-silver', 'urlis'],
-    ['german-silver', 'chowkis'],
-    ['german-silver', 'dry-fruit-boxes'],
-    ['german-silver', 'traditional-showpieces'],
-    ['german-silver', 'photoframes-mirrors'],
-    ['german-silver', 'pooja-items'],
-    ['german-silver', 'candles'],
-    ['german-silver', 'gifting'],
-    ['festive'],
-    ['festive', 'diwali'],
-    ['festive', 'holi'],
-    ['festive', 'ganesh-chaturthi'],
-    ['festive', 'janmashtami'],
-    ['corporate-gifts'],
-    ['baby-announcement'],
-    ['premium'],
-    ['budget'],
-    ['brass-copper'],
-    ['price', '150'],
-    ['price', '500'],
-    ['price', '1000'],
-    ['price', '1500'],
-    ['price', 'above-1500'],
-  ];
+const PRICE_SLUGS = [
+  ['price', '150'],
+  ['price', '500'],
+  ['price', '1000'],
+  ['price', '1500'],
+  ['price', 'above-1500'],
+];
+
+// All shop category/subcategory slugs — derived from Firestore at build
+// time. New categories/subcategories added later via the admin panel still
+// render fine via the default dynamic fallback (dynamicParams defaults to true).
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  const slugs: string[][] = [...PRICE_SLUGS];
+
+  for (const cat of categories) {
+    slugs.push([cat.slug]);
+    for (const sub of cat.subcategories) {
+      slugs.push([cat.slug, sub.slug]);
+    }
+  }
+
   return slugs.map((slug) => ({ slug }));
 }
 

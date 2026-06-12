@@ -314,22 +314,24 @@ export default function AdminClient() {
   const fetchCategories = async () => {
     try {
       const snap = await getDocs(collection(db, 'categories'));
-      if (!snap.empty) {
-        setCategories(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Category)));
-      } else {
-        // Firestore is empty — seed it with the default categories so they
-        // persist and don't disappear after the first custom category is added.
-        const seeded: Category[] = [];
-        for (const cat of DEFAULT_CATEGORIES) {
-          const ref = await addDoc(collection(db, 'categories'), {
-            name: cat.name,
-            slug: cat.slug,
-            subcategories: cat.subcategories,
-          });
-          seeded.push({ ...cat, id: ref.id });
-        }
-        setCategories(seeded);
+      const existing: Category[] = snap.docs.map((d) => ({ id: d.id, ...d.data() } as Category));
+      const existingSlugs = new Set(existing.map((c) => c.slug));
+
+      // Ensure every default category exists in Firestore (e.g. if only
+      // "German Silver" was added manually before, the rest get seeded too).
+      // Firestore is the single source of truth from this point on.
+      const missing = DEFAULT_CATEGORIES.filter((c) => !existingSlugs.has(c.slug));
+      const added: Category[] = [];
+      for (const cat of missing) {
+        const ref = await addDoc(collection(db, 'categories'), {
+          name: cat.name,
+          slug: cat.slug,
+          subcategories: cat.subcategories,
+        });
+        added.push({ ...cat, id: ref.id });
       }
+
+      setCategories([...existing, ...added]);
     } catch (e) {
       console.error('Fetch categories error:', e);
     }

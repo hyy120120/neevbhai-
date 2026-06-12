@@ -2,21 +2,22 @@ import HeaderWrapper from '@/components/HeaderWrapper';
 import Footer from '@/components/Footer';
 import Cart from '@/components/Cart';
 import WeddingCategoryClient from '@/components/pages/WeddingCategoryClient';
-import { getProducts } from '@/lib/serverData';
+import { getCategories, getProducts } from '@/lib/serverData';
 
-// Pre-render all known wedding category pages at build time → zero serverless
-// function calls for these routes, saving Vercel free-tier function invocations.
-export function generateStaticParams() {
-  return [
-    { slug: ['return-favours'] },
-    { slug: ['gifting'] },
-    { slug: ['rituals'] },
-  ];
+// Pre-render known "Wedding" subcategory pages — derived from Firestore at
+// build time. New subcategories added later still render fine via the
+// default dynamic fallback (dynamicParams defaults to true).
+export async function generateStaticParams() {
+  const categories = await getCategories();
+  const wedding = categories.find((c) => c.slug === 'wedding');
+  return (wedding?.subcategories ?? []).map((sub) => ({ slug: [sub.slug] }));
 }
 
 export default async function WeddingCategoryPage({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;
-  const products = await getProducts();
+  const [categories, products] = await Promise.all([getCategories(), getProducts()]);
+  const weddingCategory = categories.find((c) => c.slug === 'wedding');
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <div className="bg-[#0f2d1e] text-white py-2.5 px-4 text-center flex flex-col sm:flex-row items-center justify-center gap-3 z-50 relative">
