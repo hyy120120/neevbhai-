@@ -1,5 +1,6 @@
 'use client';
-
+import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, useEffect, useRef } from 'react';
 import { db, storage } from '@/lib/firebase';
 import {
@@ -153,6 +154,7 @@ const toSlug = (str: string) =>
 export default function AdminClient() {
   // Auth
   const [authed, setAuthed] = useState(false);
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [wrongPass, setWrongPass] = useState(false);
 
@@ -193,14 +195,23 @@ export default function AdminClient() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   // ── Login ──
-  const handleLogin = () => {
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true);
-      setWrongPass(false);
-    } else {
-      setWrongPass(true);
-    }
-  };
+  const handleLogin = async () => {
+  try {
+    await signInWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    setAuthed(true);
+    setWrongPass(false);
+
+    console.log('Firebase User:', auth.currentUser);
+  } catch (error) {
+    console.error(error);
+    setWrongPass(true);
+  }
+};
 
   // ── Fetch on auth ──
   useEffect(() => {
@@ -532,6 +543,13 @@ export default function AdminClient() {
           </div>
           <h1 className="text-2xl font-heading font-bold text-foreground mb-1">Admin Panel</h1>
           <p className="text-xs text-muted font-paragraph mb-8">Neev Gifting</p>
+          <input
+           type="email"
+           placeholder="Admin Email"
+           value={email}
+           onChange={(e) => setEmail(e.target.value)}
+           className="w-full border border-[#e5e0d5] px-4 py-3 text-sm font-paragraph outline-none mb-3"
+          />
           <input
             type="password"
             placeholder="Enter password"
