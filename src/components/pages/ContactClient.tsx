@@ -10,9 +10,9 @@ const contactCards = [
   {
     icon: Mail,
     title: 'Email Us',
-    info: 'info@neevgifting.com',
+    info: 'neevgiftingstudio@gmail.com',
     sub: 'We reply within 24 hours',
-    href: 'mailto:info@neevgifting.com',
+    href: 'mailto:neevgiftingstudio@gmail.com',
   },
   {
     icon: Phone,
