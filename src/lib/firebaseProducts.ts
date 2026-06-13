@@ -7,6 +7,7 @@ export interface FirebaseProduct {
   itemDescription: string;
   itemPrice: number;
   itemImage: string;
+  itemImages?: string[];
   category: string;
   subcategory?: string;
   isBestseller: boolean;

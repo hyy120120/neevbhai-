@@ -4,7 +4,7 @@ import Cart from '@/components/Cart';
 import ProductDetailClient from '@/components/pages/ProductDetailClient';
 import { notFound } from 'next/navigation';
 import { db } from '@/lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, limit } from 'firebase/firestore';
 import { FirebaseProduct } from '@/lib/firebaseProducts';
 
 // Dynamic route — product data comes from Firestore at request time.
@@ -21,7 +21,45 @@ async function getProduct(id: string): Promise<FirebaseProduct | null> {
     return null;
   }
 }
+async function getRelatedProducts(category: string, subcategory: string, currentId: string): Promise<FirebaseProduct[]> {
+  try {
+    const results: FirebaseProduct[] = [];
 
+    // Pehle same subcategory ke products
+    if (subcategory) {
+      const subQuery = query(
+        collection(db, 'products'),
+        where('category', '==', category),
+        where('subcategory', '==', subcategory),
+        limit(6)
+      );
+      const subSnap = await getDocs(subQuery);
+      subSnap.docs.forEach((d) => {
+        if (d.id !== currentId) results.push({ _id: d.id, ...d.data() } as FirebaseProduct);
+      });
+    }
+
+    // Phir same category ke products (jo already nahi aaye)
+    if (results.length < 5) {
+      const catQuery = query(
+        collection(db, 'products'),
+        where('category', '==', category),
+        limit(10)
+      );
+      const catSnap = await getDocs(catQuery);
+      catSnap.docs.forEach((d) => {
+        if (d.id !== currentId && !results.find((r) => r._id === d.id)) {
+          results.push({ _id: d.id, ...d.data() } as FirebaseProduct);
+        }
+      });
+    }
+
+    return results.slice(0, 8);
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    return [];
+  }
+}
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const product = await getProduct(id);
@@ -36,6 +74,11 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const { id } = await params;
   const product = await getProduct(id);
   if (!product) notFound();
+  const relatedProducts = await getRelatedProducts(
+    product!.category,
+    product!.subcategory || '',
+    id
+  );
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -50,7 +93,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
       <HeaderWrapper />
       <Cart />
       <main className="flex-grow">
-        <ProductDetailClient product={product} />
+        <ProductDetailClient product={product} relatedProducts={relatedProducts} />
       </main>
       <Footer />
     </div>

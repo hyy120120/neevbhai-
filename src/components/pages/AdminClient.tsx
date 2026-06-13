@@ -60,10 +60,10 @@ interface Product {
   itemDescription: string;
   itemPrice: number;
   itemImage: string;
+  itemImages?: string[];
   category: string;
   subcategory: string;
   isBestseller: boolean;
-  
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -132,10 +132,10 @@ const emptyProduct: Product = {
   itemDescription: '',
   itemPrice: 0,
   itemImage: '',
+  itemImages: [],
   category: '',
   subcategory: '',
   isBestseller: false,
-  
 };
 
 type Tab = 'products' | 'categories' | 'navigation';
@@ -167,8 +167,8 @@ export default function AdminClient() {
   const [showForm, setShowForm] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
   const [form, setForm] = useState<Product>(emptyProduct);
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState('');
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('All');
@@ -234,29 +234,35 @@ export default function AdminClient() {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setImageFile(file);
-    setImagePreview(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    const newFiles = [...imageFiles, ...files].slice(0, 5);
+    setImageFiles(newFiles);
+    setImagePreviews(newFiles.map((f) => URL.createObjectURL(f)));
   };
 
-  const uploadImage = async (): Promise<string> => {
-    if (!imageFile) return form.itemImage;
+  const uploadImages = async (): Promise<string[]> => {
+    if (!imageFiles.length) return form.itemImages || (form.itemImage ? [form.itemImage] : []);
     setUploading(true);
     try {
-      const formData = new FormData();
-      formData.append('image', imageFile);
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      const data = await res.json();
+      const urls = await Promise.all(
+        imageFiles.map(async (file) => {
+          const formData = new FormData();
+          formData.append('image', file);
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData,
+          });
+          const data = await res.json();
+          return data.url as string;
+        })
+      );
       setUploading(false);
-      return data.url;
+      return urls;
     } catch (e) {
       console.error('Upload error:', e);
       setUploading(false);
-      return form.itemImage;
+      return form.itemImages || [];
     }
   };
 
@@ -264,8 +270,12 @@ export default function AdminClient() {
     if (!form.itemName) return;
     setSaving(true);
     try {
-      const imageUrl = await uploadImage();
-      const data = { ...form, itemImage: imageUrl };
+      const imageUrls = await uploadImages();
+      const data = { 
+        ...form, 
+        itemImage: imageUrls[0] || form.itemImage,
+        itemImages: imageUrls,
+      };
       if (editProduct?.id) {
         await updateDoc(doc(db, 'products', editProduct.id), data);
       } else {
@@ -292,16 +302,16 @@ export default function AdminClient() {
   const openAdd = () => {
     setEditProduct(null);
     setForm(emptyProduct);
-    setImageFile(null);
-    setImagePreview('');
+    setImageFiles([]);
+    setImagePreviews([]);
     setShowForm(true);
   };
 
   const openEdit = (p: Product) => {
     setEditProduct(p);
     setForm(p);
-    setImagePreview(p.itemImage);
-    setImageFile(null);
+    setImageFiles([]);
+    setImagePreviews(p.itemImages?.length ? p.itemImages : p.itemImage ? [p.itemImage] : []);
     setShowForm(true);
   };
 
@@ -309,8 +319,8 @@ export default function AdminClient() {
     setShowForm(false);
     setEditProduct(null);
     setForm(emptyProduct);
-    setImageFile(null);
-    setImagePreview('');
+    setImageFiles([]);
+    setImagePreviews([]);
   };
 
   // ── Categories ──
@@ -1094,30 +1104,51 @@ export default function AdminClient() {
               {/* Image Upload */}
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-muted mb-2">
-                  Product Image
+                  Product Images (Max 5)
                 </label>
                 <div
                   onClick={() => fileRef.current?.click()}
-                  className="border-2 border-dashed border-[#e5e0d5] hover:border-[#1a6b44] transition-colors cursor-pointer p-8 text-center rounded"
+                  className="border-2 border-dashed border-[#e5e0d5] hover:border-[#1a6b44] transition-colors cursor-pointer p-6 text-center rounded"
                 >
-                  {imagePreview ? (
-                    <div className="relative w-36 h-36 mx-auto rounded overflow-hidden">
-                      <Image
-                        src={imagePreview}
-                        alt="Preview"
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
+                  {imagePreviews.length > 0 ? (
+                    <div className="flex flex-wrap gap-3 justify-center">
+                      {imagePreviews.map((src, idx) => (
+                        <div key={idx} className="relative w-24 h-24 rounded overflow-hidden border border-[#e5e0d5]">
+                          <Image
+                            src={src}
+                            alt={`Preview ${idx + 1}`}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const newPreviews = imagePreviews.filter((_, i) => i !== idx);
+                              const newFiles = imageFiles.filter((_, i) => i !== idx);
+                              setImagePreviews(newPreviews);
+                              setImageFiles(newFiles);
+                            }}
+                            className="absolute top-1 right-1 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      {imagePreviews.length < 5 && (
+                        <div className="w-24 h-24 rounded border-2 border-dashed border-[#e5e0d5] flex items-center justify-center text-muted">
+                          <Plus className="h-6 w-6" />
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div>
                       <Upload className="h-10 w-10 text-muted mx-auto mb-3" />
                       <p className="text-sm text-muted font-paragraph">
-                        Click to upload product image
+                        Click to upload product images
                       </p>
                       <p className="text-xs text-muted/60 font-paragraph mt-1">
-                        JPG, PNG, WEBP supported
+                        JPG, PNG, WEBP — Max 5 images
                       </p>
                     </div>
                   )}
@@ -1126,17 +1157,10 @@ export default function AdminClient() {
                   ref={fileRef}
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handleImageChange}
                   className="hidden"
                 />
-                {imagePreview && (
-                  <button
-                    onClick={() => { setImagePreview(''); setImageFile(null); }}
-                    className="mt-2 text-xs text-red-500 hover:underline"
-                  >
-                    Remove image
-                  </button>
-                )}
               </div>
 
               {/* Product Name */}
