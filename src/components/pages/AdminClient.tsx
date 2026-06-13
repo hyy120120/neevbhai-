@@ -2,7 +2,7 @@
 import { auth } from '@/lib/firebase';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useState, useEffect, useRef } from 'react';
-import { db, storage } from '@/lib/firebase';
+import { db } from '@/lib/firebase';
 import {
   collection,
   addDoc,
@@ -13,7 +13,6 @@ import {
   orderBy,
   query,
 } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import Image from 'next/image';
 import {
   Plus,
@@ -245,11 +244,15 @@ export default function AdminClient() {
     if (!imageFile) return form.itemImage;
     setUploading(true);
     try {
-      const storageRef = ref(storage, `products/${Date.now()}_${imageFile.name}`);
-      await uploadBytes(storageRef, imageFile);
-      const url = await getDownloadURL(storageRef);
+      const formData = new FormData();
+      formData.append('image', imageFile);
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
       setUploading(false);
-      return url;
+      return data.url;
     } catch (e) {
       console.error('Upload error:', e);
       setUploading(false);

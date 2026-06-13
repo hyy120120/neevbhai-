@@ -150,7 +150,7 @@ export default function ProductDetailClient({ product }: { product: FirebaseProd
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-3 pt-2">
                   {[
-                    { icon: Shield, text: '100% Pure Silver' },
+                    { icon: Shield, text: '999 Silver' },
                     { icon: Truck, text: 'Ships Worldwide' },
                     { icon: Award, text: 'Premium Quality' },
                   ].map((badge, i) => (
