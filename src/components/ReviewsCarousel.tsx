@@ -5,108 +5,97 @@ import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
 
 const TestimonialCarousel = () => {
   const reviews = [
-{
-id: 1,
-name: "Rahul Mehta",
-role: "Business Owner",
-review:
-"Ordered a silver frame for my parents' anniversary. The finishing was really nice and the packaging looked premium. Delivery was delayed by a day, but overall we were very happy with the purchase.",
-rating: 4,
-date: "Jan 2026",
-initials: "RM",
-},
-{
-id: 2,
-name: "Ananya Bose",
-role: "Corporate Client",
-review:
-"We purchased return gifts for a corporate event. The quality was good and the team was responsive throughout the process. Received positive feedback from most of our clients.",
-rating: 4,
-date: "Nov 2025",
-initials: "AB",
-},
-{
-id: 3,
-name: "Deepika Nair",
-role: "Wedding Planner",
-review:
-"Needed wedding gifts on a tight timeline and Neev Gifting managed to deliver on schedule. The silver items looked elegant and matched the theme of the event perfectly.",
-rating: 5,
-date: "Mar 2026",
-initials: "DN",
-},
-{
-id: 4,
-name: "Vikram Shah",
-role: "Entrepreneur",
-review:
-"Bought a silver idol for a housewarming ceremony. The detailing was impressive and the weight felt genuine. Would definitely consider ordering again.",
-rating: 5,
-date: "Feb 2026",
-initials: "VS",
-},
-{
-id: 5,
-name: "Priya Kapoor",
-role: "Interior Designer",
-review:
-"The photo frame I ordered looked beautiful in person. The website images were accurate and the gift arrived securely packed. Happy with the experience.",
-rating: 4,
-date: "Dec 2025",
-initials: "PK",
-},
-{
-id: 6,
-name: "Arjun Menon",
-role: "Corporate HR",
-review:
-"Ordered gifts for our annual employee recognition program. The products were appreciated by the team and the ordering process was fairly smooth.",
-rating: 4,
-date: "Jan 2026",
-initials: "AM",
-},
-{
-id: 7,
-name: "Sneha Reddy",
-role: "Homemaker",
-review:
-"I was looking for a traditional silver pooja set and found exactly what I needed. The finish was clean and the product felt premium without being overly flashy.",
-rating: 5,
-date: "Feb 2026",
-initials: "SR",
-},
-{
-id: 8,
-name: "Kunal Patel",
-role: "Chartered Accountant",
-review:
-"Good collection and reasonable pricing for the quality offered. Customer support answered my queries quickly before I placed the order.",
-rating: 4,
-date: "Oct 2025",
-initials: "KP",
-},
-{
-id: 9,
-name: "Neha Verma",
-role: "Teacher",
-review:
-"Purchased a silver gift for my sister's engagement. The product was exactly as described. Packaging could have been slightly better, but the gift itself was lovely.",
-rating: 3,
-date: "Nov 2025",
-initials: "NV",
-},
-{
-id: 10,
-name: "Rohit Jain",
-role: "Retail Store Owner",
-review:
-"This was my second purchase from Neev Gifting. Consistent quality and reliable delivery. That's mainly why I keep coming back.",
-rating: 5,
-date: "Jan 2026",
-initials: "RJ",
-},
-];
-
+    {
+      id: 1,
+      name: "Rahul Mehta",
+      role: "Event Management Company",
+      review: "Ordered 500 silver coins for a corporate event. The finishing was consistent across all pieces and packaging was professional. Delivery was on time and the team handled our volume requirements well.",
+      rating: 4,
+      date: "Jan 2026",
+      initials: "RM",
+    },
+    {
+      id: 2,
+      name: "Ananya Bose",
+      role: "Corporate Client",
+      review: "We purchased return gifts for a large corporate event with over 300 attendees. The quality was good and the team was responsive throughout the process. Received positive feedback from most of our clients.",
+      rating: 4,
+      date: "Nov 2025",
+      initials: "AB",
+    },
+    {
+      id: 3,
+      name: "Deepika Nair",
+      role: "Wedding Planner",
+      review: "Needed wedding gifts for multiple families on a tight timeline and Neev Gifting managed to deliver on schedule. The silver items looked elegant and matched the theme of the event perfectly.",
+      rating: 5,
+      date: "Mar 2026",
+      initials: "DN",
+    },
+    {
+      id: 4,
+      name: "Vikram Shah",
+      role: "Entrepreneur",
+      review: "Ordered silver idols for a large housewarming ceremony. The detailing was impressive and the weight felt genuine. Would definitely consider ordering again for future events.",
+      rating: 5,
+      date: "Feb 2026",
+      initials: "VS",
+    },
+    {
+      id: 5,
+      name: "Priya Kapoor",
+      role: "Interior Designer",
+      review: "The photo frames I ordered for multiple projects looked beautiful in person. The website images were accurate and the gifts arrived securely packed. Happy with the experience.",
+      rating: 4,
+      date: "Dec 2025",
+      initials: "PK",
+    },
+    {
+      id: 6,
+      name: "Rudra Kapadia",
+      role: "Corporate HR",
+      review: "Ordered gifts for our annual employee recognition program with 200+ team members. The products were appreciated by everyone and the ordering process was fairly smooth.",
+      rating: 4,
+      date: "Jan 2026",
+      initials: "AM",
+    },
+    {
+      id: 7,
+      name: "Sneha Reddy",
+      role: "Homemaker",
+      review: "I was looking for traditional silver pooja sets for multiple family members. Found exactly what I needed. The finish was clean and the product felt premium without being overly flashy.",
+      rating: 5,
+      date: "Feb 2026",
+      initials: "SR",
+    },
+    {
+      id: 8,
+      name: "Kunal Patel",
+      role: "Chartered Accountant",
+      review: "Good collection and reasonable pricing for the quantity we needed. Customer support answered my queries quickly before I placed the large order.",
+      rating: 4,
+      date: "Oct 2025",
+      initials: "KP",
+    },
+    {
+      id: 9,
+      name: "Neha Verma",
+      role: "Teacher",
+      review: "Purchased silver gifts for my sister's engagement and other family occasions. The product was exactly as described. Packaging could have been slightly better, but the gift itself was lovely.",
+      rating: 3,
+      date: "Nov 2025",
+      initials: "NV",
+    },
+    {
+      id: 10,
+      name: "Rohit Jain",
+      role: "Retail Store Owner",
+      review: "This was my second large purchase from Neev Gifting. Consistent quality and reliable delivery for all items. That's mainly why I keep coming back.",
+      rating: 5,
+      date: "Jan 2026",
+      initials: "RJ",
+    },
+  ];
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -148,7 +137,7 @@ initials: "RJ",
   const visibleCards = reviews.slice(currentIndex * cardsPerSlide, (currentIndex + 1) * cardsPerSlide);
 
   return (
-    <section className="py-20 md:py-28 bg-gradient-to-br from-[#1a6b44] via-[#1a5a3a] to-[#0d3d26] relative overflow-hidden">
+    <section className="py-12 md:py-16 bg-gradient-to-br from-[#1a6b44] via-[#1a5a3a] to-[#0d3d26] relative overflow-hidden">
       {/* Luxurious background accents */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-20 left-10 w-40 h-40 rounded-full bg-[#C9A84C] blur-3xl" />
@@ -288,7 +277,7 @@ initials: "RJ",
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16 md:mb-20">
+        <div className="text-center md:mb-20">
           <div className="inline-flex items-center gap-4 mb-6">
             <div className="h-px w-12 bg-gradient-to-r from-transparent via-[#C9A84C] to-[#C9A84C]/40" />
             <span className="text-xs tracking-[0.3em] uppercase font-semibold text-[#C9A84C]">

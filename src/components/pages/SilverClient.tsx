@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import AnimatedElement from '@/components/AnimatedElement';
-import ProductCard from '@/components/ProductCard';
-import { FirebaseProduct } from '@/lib/firebaseProducts';
-import { Category } from '@/lib/categories';
+import Link from "next/link";
+import AnimatedElement from "@/components/AnimatedElement";
+import ProductCard from "@/components/ProductCard";
+import { FirebaseProduct } from "@/lib/firebaseProducts";
+import { Category } from "@/lib/categories";
 
 export default function SilverClient({
   initialProducts,
@@ -21,7 +21,9 @@ export default function SilverClient({
     })) ?? [];
 
   const silverProducts = products.filter(
-    (p) => p.category?.toLowerCase().includes('silver') || p.category?.toLowerCase().includes('999')
+    (p) =>
+      p.category?.toLowerCase().includes("silver") ||
+      p.category?.toLowerCase().includes("999"),
   );
 
   return (
@@ -31,8 +33,9 @@ export default function SilverClient({
         <div
           className="absolute inset-0 opacity-10"
           style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, #d4af37 1px, transparent 0)',
-            backgroundSize: '32px 32px',
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, #d4af37 1px, transparent 0)",
+            backgroundSize: "32px 32px",
           }}
         />
         <div className="container mx-auto px-4 relative z-10 text-center">
@@ -43,7 +46,8 @@ export default function SilverClient({
             999 Silver Collection
           </h1>
           <p className="text-white/65 font-paragraph text-base md:text-lg max-w-xl mx-auto">
-            Crafted from the finest 999 pure silver — timeless pieces for gifting, worship, and home decor.
+            Crafted from the finest 999 pure silver — timeless pieces for
+            gifting, worship, and home decor.
           </p>
         </div>
       </section>
@@ -87,27 +91,31 @@ export default function SilverClient({
             </div>
           ) : (
             <div className="text-center py-24">
-              <p className="font-heading text-xl text-foreground mb-4">Collection coming soon!</p>
-              <p className="text-muted font-paragraph text-sm">Contact us for our full 999 silver catalogue.</p>
+              <p className="font-heading text-xl text-foreground mb-4">
+                Collection coming soon!
+              </p>
+              <p className="text-muted font-paragraph text-sm">
+                Contact us for our full 999 silver catalogue.
+              </p>
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-20 bg-[#0f2d1e]">
+      <section className="py-16 bg-[#f5f3ee] border-t border-[#e5e0d5]">
         <div className="container mx-auto px-4 max-w-4xl text-center">
           <AnimatedElement>
-            <h2 className="text-3xl md:text-4xl font-heading font-bold text-white mb-5">
+            <h2 className="text-2xl md:text-3xl font-heading font-bold text-foreground mb-4">
               Looking for Something Special?
             </h2>
-            <p className="text-white/65 font-paragraph text-base mb-8 max-w-xl mx-auto">
-              Get in touch for custom 999 silver pieces, bulk orders, or exclusive gifting collections.
+            <p className="text-muted font-paragraph text-sm mb-6">
+              Get in touch for custom 999 silver pieces, bulk orders, or
+              exclusive gifting collections.
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link
                 href="/contact"
-                className="px-8 py-3.5 bg-[#d4af37] text-[#0a1f13] text-sm font-paragraph font-bold uppercase tracking-wider hover:bg-[#c9a12b] transition-all duration-300"
+                className="px-8 py-3.5 bg-primary text-white text-sm font-paragraph font-bold uppercase tracking-wider hover:bg-primary/90 transition-all duration-300"
               >
                 Contact Us
               </Link>
@@ -115,7 +123,7 @@ export default function SilverClient({
                 href="https://wa.me/919712979856"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-8 py-3.5 border border-white/30 text-white text-sm font-paragraph font-semibold uppercase tracking-wider hover:bg-white/10 transition-all duration-300"
+                className="px-8 py-3.5 border border-[#d4af37] text-[#b8960c] text-sm font-paragraph font-bold uppercase tracking-wider hover:bg-[#d4af37]/10 transition-all duration-300"
               >
                 WhatsApp Us
               </a>
