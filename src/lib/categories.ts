@@ -30,14 +30,13 @@ export async function fetchCategoriesFromFirestore(): Promise<Category[]> {
 
 // Convert categories to navigation structure for Header
 export function categoriesToNavigation(categories: Category[]) {
-  const shopItem = categories.find((c) => c.slug === 'german-silver');
   const columns = [];
 
-  // Group categories
   const germanSilver = categories.find((c) => c.slug === 'german-silver');
   const festive = categories.find((c) => c.slug === 'festive');
+  const imported = categories.find((c) => c.slug === 'imported');
   const others = categories.filter(
-    (c) => c.slug !== 'german-silver' && c.slug !== 'festive'
+    (c) => c.slug !== 'german-silver' && c.slug !== 'festive' && c.slug !== 'imported'
   );
 
   if (germanSilver) {
@@ -58,6 +57,17 @@ export function categoriesToNavigation(categories: Category[]) {
       items: festive.subcategories.map((sub) => ({
         label: sub.name,
         href: `/shop/festive/${sub.slug}`,
+      })),
+    });
+  }
+
+  if (imported) {
+    columns.push({
+      heading: 'IMPORTED',
+      href: '/shop/imported',
+      items: imported.subcategories.map((sub) => ({
+        label: sub.name,
+        href: `/shop/imported/${sub.slug}`,
       })),
     });
   }

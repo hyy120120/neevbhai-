@@ -209,9 +209,9 @@ useEffect(() => {
                 {/* Trust badges */}
                 <div className="grid grid-cols-3 gap-3 pt-2">
                   {[
-                    { icon: Shield, text: '999 Silver' },
+                    { icon: Shield, text: 'Premium Quality' },
                     { icon: Truck, text: 'Ships Worldwide' },
-                    { icon: Award, text: 'Premium Quality' },
+                    { icon: Award, text: 'Bulk Orders Only' },
                   ].map((badge, i) => (
                     <div key={i} className="flex flex-col items-center gap-1.5 p-3 bg-[#f5f3ee] text-center">
                       <badge.icon className="h-5 w-5 text-[#d4af37]" />

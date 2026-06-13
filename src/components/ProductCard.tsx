@@ -79,11 +79,7 @@ export default function ProductCard({ product, showBadge = true }: ProductCardPr
             {product.itemName}
           </h3>
         </div>
-        <div className="flex items-center justify-center gap-3 mt-1">
-          <p className="text-base font-heading font-bold text-primary">
-            {formatPrice(product.itemPrice)}
-          </p>
-        </div>
+        
       </div>
     </Link>
   );
