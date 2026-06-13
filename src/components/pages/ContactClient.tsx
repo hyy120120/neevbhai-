@@ -57,9 +57,10 @@ export default function ContactClient() {
     const errs = validate();
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    setSubmitting(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setSubmitting(false);
+    const whatsappText = encodeURIComponent(
+      `*New Contact Form Message*\n\n*Name:* ${form.name}\n*Email:* ${form.email}\n*Phone:* ${form.phone || 'Not provided'}\n*Subject:* ${form.subject || 'Not specified'}\n\n*Message:*\n${form.message}`
+    );
+    window.open(`https://wa.me/919712979856?text=${whatsappText}`, '_blank');
     setSubmitted(true);
     setForm({ name: '', email: '', phone: '', subject: '', message: '' });
     setTimeout(() => setSubmitted(false), 6000);
