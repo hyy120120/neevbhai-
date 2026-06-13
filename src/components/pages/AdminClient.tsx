@@ -541,7 +541,12 @@ export default function AdminClient() {
   // ── Filtered products ──
   const filtered = products.filter((p) => {
     const matchSearch = p.itemName.toLowerCase().includes(search.toLowerCase());
-    const matchCat = filterCat === 'All' || p.category === filterCat;
+    let matchCat = false;
+    if (filterCat === 'All') matchCat = true;
+    else if (filterCat === '__no_image__') matchCat = !p.itemImage;
+    else if (filterCat === '__no_description__') matchCat = !p.itemDescription;
+    else if (filterCat === '__no_subcategory__') matchCat = !p.subcategory;
+    else matchCat = p.category === filterCat;
     return matchSearch && matchCat;
   });
 
@@ -651,15 +656,18 @@ export default function AdminClient() {
                 className="flex-1 border border-[#e5e0d5] bg-white px-4 py-2.5 text-sm font-paragraph outline-none focus:border-[#1a6b44]"
               />
               <select
-                value={filterCat}
-                onChange={(e) => setFilterCat(e.target.value)}
-                className="border border-[#e5e0d5] bg-white px-4 py-2.5 text-sm font-paragraph outline-none focus:border-[#1a6b44]"
-              >
-                <option value="All">All Categories</option>
-                {categories.map((c) => (
-                  <option key={c.slug}>{c.name}</option>
-                ))}
-              </select>
+  value={filterCat}
+  onChange={(e) => setFilterCat(e.target.value)}
+  className="border border-[#e5e0d5] bg-white px-4 py-2.5 text-sm font-paragraph outline-none focus:border-[#1a6b44]"
+>
+  <option value="All">All Categories</option>
+  <option value="__no_image__">⚠ No Image</option>
+  <option value="__no_description__">⚠ No Description</option>
+  <option value="__no_subcategory__">⚠ No Subcategory</option>
+  {categories.map((c) => (
+    <option key={c.slug}>{c.name}</option>
+  ))}
+</select>
               <button
                 onClick={openAdd}
                 className="flex items-center gap-2 px-5 py-2.5 bg-[#1a6b44] text-white text-sm font-paragraph font-bold hover:bg-[#15573a] transition-colors whitespace-nowrap"
