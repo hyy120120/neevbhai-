@@ -277,7 +277,7 @@ export default function ContactClient() {
                   >
                     <MapPin className="h-4 w-4 mt-0.5 text-[#d4af37] flex-shrink-0" />
                     <span className="flex items-center gap-1.5">
-                      India — Shipping Worldwide
+                                        G-37, Atlanta Business Hub, Vesu Canal Rd, Bharthana, Surat, Gujarat 395007
                       <ExternalLink className="h-3.5 w-3.5 opacity-70 group-hover:opacity-100" />
                     </span>
                   </a>
@@ -293,26 +293,7 @@ export default function ContactClient() {
                 </div>
               </AnimatedElement>
 
-              {/* Quick WhatsApp CTA */}
-              <AnimatedElement delay={250}>
-                <div className="bg-[#0f2d1e] p-6 text-center">
-                  <p className="text-xs uppercase tracking-widest text-[#d4af37] font-paragraph font-semibold mb-3">
-                    Fastest Response
-                  </p>
-                  <p className="text-white font-heading font-bold text-lg mb-4">
-                    Chat with us on WhatsApp
-                  </p>
-                  <a
-                    href="https://wa.me/919712979856"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#25D366] text-white text-sm font-paragraph font-bold hover:bg-[#1fb857] transition-colors"
-                  >
-                    <MessageCircle className="h-4 w-4" />
-                    Open WhatsApp
-                  </a>
-                </div>
-              </AnimatedElement>
+             
             </div>
           </div>
         </div>

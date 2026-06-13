@@ -100,7 +100,6 @@ export default function Footer() {
                 '100% Payment Secure',
                 'Bulk Orders Available',
                 'Customized Gift Sets',
-                'Easy Returns Policy',
               ].map((item) => (
                 <li key={item} className="text-white/60 text-sm font-paragraph flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#d4af37] flex-shrink-0" />
@@ -142,20 +141,10 @@ export default function Footer() {
                   className="flex items-start gap-3 text-white/60 hover:text-[#d4af37] transition-colors text-sm font-paragraph group cursor-pointer"
                 >
                   <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0 group-hover:text-[#d4af37]" />
-                  India (Ships Worldwide)
+                  G-37, Atlanta Business Hub, Vesu Canal Rd, Bharthana, Surat, Gujarat 395007
                 </a>
               </li>
-              <li className="pt-2">
-                <a
-                  href="https://wa.me/919712979856"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#25D366] text-white text-sm font-paragraph rounded-sm hover:bg-[#1fb857] transition-colors"
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Chat on WhatsApp
-                </a>
-              </li>
+              
             </ul>
           </div>
         </div>
@@ -165,9 +154,19 @@ export default function Footer() {
           <p className="text-white/40 text-xs font-paragraph">
             © {new Date().getFullYear()} Neev Gifting. All rights reserved.
           </p>
-          <p className="text-white/30 text-xs font-paragraph">
-            Enhancing Experiences · Premium Silver Gifting
-          </p>
+          <div className="flex items-center gap-4">
+            <Link href="/privacy-policy" className="text-white/30 hover:text-[#d4af37] text-xs font-paragraph transition-colors">
+              Privacy Policy
+            </Link>
+            <span className="text-white/20 text-xs">·</span>
+            <Link href="/terms" className="text-white/30 hover:text-[#d4af37] text-xs font-paragraph transition-colors">
+              Terms of Service
+            </Link>
+            <span className="text-white/20 text-xs">·</span>
+            <Link href="/refund-policy" className="text-white/30 hover:text-[#d4af37] text-xs font-paragraph transition-colors">
+              Refund Policy
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
