@@ -399,7 +399,7 @@ initials: "RJ",
         <div className="text-center mt-12">
           <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full bg-white/5 backdrop-blur-sm border border-[#C9A84C]/20">
             <span className="text-[#C9A84C] text-lg">★</span>
-            <span className="text-white/70 text-xs font-medium tracking-wide">Trusted by 500+ Happy Customers</span>
+            <span className="text-white/70 text-xs font-medium tracking-wide">Trusted by 700+ Happy Customers</span>
           </div>
         </div>
       </div>
